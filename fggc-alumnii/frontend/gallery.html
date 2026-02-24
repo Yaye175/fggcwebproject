@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery | FGGC Alumni</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">FGGC Alumni</div>
+        <nav>
+            <ul id="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="gallery.html" class="active">Gallery</a></li>
+            </ul>
+        </nav>
+        <div class="auth-buttons" id="auth-links"></div>
+    </header>
+
+    <main>
+        <h1>Memories & Events Gallery</h1>
+        <p style="margin-bottom: 2rem;">A collection of our proudest moments and events.</p>
+
+        <div id="gallery-container" class="gallery-grid">
+            <p>Loading gallery...</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 FGGC Alumni Association.</p>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('gallery-container');
+            try {
+                const images = await api.get('/gallery');
+
+                if (images.length === 0) {
+                    container.innerHTML = '<p>No images available in the gallery yet.</p>';
+                    return;
+                }
+
+                container.innerHTML = images.map(img => `
+                    <div class="gallery-item">
+                        <img src="${api.API_URL}/uploads/${img.filename}" alt="${img.caption || 'Alumni Event'}">
+                        ${img.caption ? `<div style="padding: 0.5rem; text-align: center; background: white;">${img.caption}</div>` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = '<p>Failed to load gallery images.</p>';
+            }
+        });
+    </script>
+</body>
+
+</html>

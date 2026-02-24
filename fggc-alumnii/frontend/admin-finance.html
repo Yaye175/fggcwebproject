@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Financial Panel | FGGC Alumni</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo"><a href="index.html" style="color: inherit; text-decoration: none;">FGGC Alumni Admin</a>
+        </div>
+        <nav>
+            <ul id="nav-links">
+                <li><a href="dashboard.html">My Dashboard</a></li>
+                <li><a href="admin-finance.html" class="active">Finance Panel</a></li>
+            </ul>
+        </nav>
+        <div class="auth-buttons" id="auth-links"></div>
+    </header>
+
+    <main>
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+            <div>
+                <h1>Financial Administration</h1>
+                <p>Manage alumni annual dues payments.</p>
+            </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Member Name</th>
+                        <th>Email</th>
+                        <th>Graduation Year</th>
+                        <th>Current Year Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="members-table-body">
+                    <tr>
+                        <td colspan="5">Loading members...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer style="margin-top: auto;">
+        <p>&copy; 2024 FGGC Alumni Association.</p>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>
