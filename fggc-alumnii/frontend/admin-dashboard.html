@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | FGGC Gboko FCT-Chapter Alumni</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .filter-container {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .save-btn {
+            background-color: #004d40;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .save-btn:hover {
+            background-color: #00332a;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .status-paid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-overdue {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo" style="display: flex; align-items: center;">
+            <img src="images/logo.png" alt="FGGC Logo" style="height: 50px; margin-right: 15px; border-radius: 4px;">
+            <a href="index.html" style="color: inherit; text-decoration: none;">FGGC Gboko <br>FCT-Chapter <br>Alumni
+                Admin</a>
+        </div>
+        <nav>
+            <ul id="nav-links">
+                <li><a href="dashboard.html">My Dashboard</a></li>
+                <li><a href="admin-dashboard.html" class="active">User Management</a></li>
+            </ul>
+        </nav>
+        <div class="auth-buttons" id="auth-links"></div>
+    </header>
+
+    <main>
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+            <div>
+                <h1>Admin Dashboard - User Management</h1>
+                <p>Manage registered users and their monthly payment status.</p>
+            </div>
+        </div>
+
+        <div class="filter-container">
+            <label for="status-filter">Filter by Status:</label>
+            <select id="status-filter" class="status-select">
+                <option value="All">All Statuses</option>
+                <option value="Paid">Paid</option>
+                <option value="Pending">Pending</option>
+                <option value="Overdue">Overdue</option>
+            </select>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Member ID</th>
+                        <th>Monthly Payment Status</th>
+                        <th>Months Paid</th>
+                        <th>Last Payment Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body">
+                    <tr>
+                        <td colspan="6">Loading users...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="margin:0;">Update Monthly Payments</h3>
+                <button class="modal-close" id="modal-close-btn">&times;</button>
+            </div>
+
+            <p style="margin-bottom: 1rem; font-size: 0.9rem;">Select quick options or pick individual months:</p>
+
+            <div class="preset-buttons">
+                <button class="btn btn-secondary preset-btn" data-preset="yearly">Yearly</button>
+                <button class="btn btn-secondary preset-btn" data-preset="h1">1st Half</button>
+                <button class="btn btn-secondary preset-btn" data-preset="h2">2nd Half</button>
+                <button class="btn btn-secondary preset-btn" data-preset="q1">Q1</button>
+                <button class="btn btn-secondary preset-btn" data-preset="q2">Q2</button>
+                <button class="btn btn-secondary preset-btn" data-preset="q3">Q3</button>
+                <button class="btn btn-secondary preset-btn" data-preset="q4">Q4</button>
+                <button class="btn btn-secondary preset-btn" data-preset="clear"
+                    style="color: var(--danger-red); border-color: var(--danger-red);">Clear All</button>
+            </div>
+
+            <div class="months-grid">
+                <label class="month-checkbox-group"><input type="checkbox" value="Jan" class="month-check"> Jan</label>
+                <label class="month-checkbox-group"><input type="checkbox" value="Feb" class="month-check"> Feb</label>
+                <label class="month-checkbox-group"><input type="checkbox" value="Mar" class="month-check"> Mar</label>
+                <label class="month-checkbox-group"><input type="checkbox" value="Apr" class="month-check"> Apr</label>
+                <label class="month-checkbox-group"><input type="checkbox" value="May" class="month-check"> May</label>
+                <label class="month-checkbox-group"><input type="checkbox" value="Jun" class="month-check"> Jun</label>
+                <label class="month-checkbox-group"><input type="checkbox" value="Jul" class="month-check"> Jul</label>
+                <label class="month-checkbox-group"><input type="checkbox" value="Aug" class="month-check"> Aug</label>
+                <label class="month-checkbox-group"><input type="checkbox" value="Sep" class="month-check"> Sep</label>
+                <label class="month-checkbox-group"><input type="checkbox" value="Oct" class="month-check"> Oct</label>
+                <label class="month-checkbox-group"><input type="checkbox" value="Nov" class="month-check"> Nov</label>
+                <label class="month-checkbox-group"><input type="checkbox" value="Dec" class="month-check"> Dec</label>
+            </div>
+
+            <button class="btn btn-primary" id="save-payment-btn" style="width: 100%;">Save Payments</button>
+        </div>
+    </div>
+
+    <footer style="margin-top: auto;">
+        <p>&copy; 2024 FGGC Alumni Association.</p>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin-dashboard.js"></script>
+</body>
+
+</html>

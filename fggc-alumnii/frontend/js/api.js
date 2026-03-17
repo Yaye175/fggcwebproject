@@ -29,7 +29,8 @@ const api = {
     get: async (endpoint) => {
         const response = await fetch(`${API_URL}${endpoint}`, {
             method: 'GET',
-            headers: api.getHeaders()
+            headers: api.getHeaders(),
+            credentials: 'same-origin'
         });
         return api.handleResponse(response);
     },
@@ -39,6 +40,7 @@ const api = {
         const response = await fetch(`${API_URL}${endpoint}`, {
             method: 'POST',
             headers: api.getHeaders(),
+            credentials: 'same-origin',
             body: JSON.stringify(payload)
         });
         return api.handleResponse(response);
@@ -49,6 +51,7 @@ const api = {
         const response = await fetch(`${API_URL}${endpoint}`, {
             method: 'PUT',
             headers: api.getHeaders(),
+            credentials: 'same-origin',
             body: JSON.stringify(payload)
         });
         return api.handleResponse(response);

@@ -17,7 +17,8 @@ router.get('/members', async (req, res) => {
         // This query fetches all users and their payment status for the current year
         const query = `
             SELECT u.id, u.first_name, u.last_name, u.email, u.graduation_year,
-                   COALESCE(p.status, 'unpaid') AS payment_status
+                   COALESCE(p.status, 'unpaid') AS payment_status,
+                   COALESCE(p.months_paid, '') AS months_paid
             FROM users u
             LEFT JOIN payments p ON u.id = p.user_id AND p.year = ?
             WHERE u.is_admin = FALSE
@@ -35,6 +36,7 @@ router.get('/members', async (req, res) => {
 // PUT /admin/finance/payments/:userId/toggle
 router.put('/payments/:userId/toggle', async (req, res) => {
     const { userId } = req.params;
+    const { months_paid } = req.body;
     const currentYear = new Date().getFullYear();
 
     try {
@@ -44,28 +46,37 @@ router.put('/payments/:userId/toggle', async (req, res) => {
             [userId, currentYear]
         );
 
-        let newStatus = 'paid';
+        // Calculate expected status from the payload
+        // If months_paid is provided and not empty, it's paid. Otherwise unpaid.
+        let newStatus = months_paid ? 'paid' : 'unpaid';
+        let displayStatus = months_paid ? 'Paid' : 'Pending'; // For the users table (capitalized)
+        let newMonthsPaid = months_paid || '';
 
         if (payments.length > 0) {
-            // Toggle existing status
-            newStatus = payments[0].status === 'paid' ? 'unpaid' : 'paid';
+            // Update existing record
             await pool.execute(
-                'UPDATE payments SET status = ? WHERE id = ?',
-                [newStatus, payments[0].id]
+                'UPDATE payments SET status = ?, months_paid = ? WHERE id = ?',
+                [newStatus, newMonthsPaid, payments[0].id]
             );
         } else {
             // Create new record as paid with a default amount
             const defaultAmount = 50.00; // e.g. 50 GHS/NGN/USD
             await pool.execute(
-                'INSERT INTO payments (user_id, year, amount, status) VALUES (?, ?, ?, ?)',
-                [userId, currentYear, defaultAmount, 'paid']
+                'INSERT INTO payments (user_id, year, amount, status, months_paid) VALUES (?, ?, ?, ?, ?)',
+                [userId, currentYear, defaultAmount, newStatus, newMonthsPaid]
             );
         }
 
-        res.json({ message: 'Payment status updated', status: newStatus });
+        // Sync the users table so the admin dashboard reflects the change
+        await pool.execute(
+            'UPDATE users SET payment_status = ?, last_payment_date = CURRENT_TIMESTAMP WHERE id = ?',
+            [displayStatus, userId]
+        );
+
+        res.json({ message: 'Payment status updated', status: newStatus, months_paid: newMonthsPaid });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Server error toggling payment status' });
+        res.status(500).json({ message: 'Server error updating payment status' });
     }
 });
 

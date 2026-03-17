@@ -11,11 +11,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
                 `;
                 if (user.is_admin) {
-                    links += `<a href="admin-finance.html" class="btn btn-secondary">Admin Panel</a>`;
+                    links += `<a href="admin-dashboard.html" class="btn btn-secondary">Admin Panel</a>`;
                 }
-                links += `<button onclick="logout()" class="btn btn-primary">Logout</button>`;
+                links += `<button id="logout-btn" class="btn btn-primary">Logout</button>`;
 
                 authContainer.innerHTML = links;
+
+                // Attach robust listener
+                const logoutBtn = document.getElementById('logout-btn');
+                if (logoutBtn) {
+                    const handleLogout = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        window.logout();
+                    };
+                    logoutBtn.addEventListener('click', handleLogout);
+                    logoutBtn.addEventListener('touchend', handleLogout); // iOS fix
+                }
             } else {
                 // Logged out
                 authContainer.innerHTML = `
@@ -44,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Redirect based on role
                 if (data.user.is_admin) {
-                    window.location.href = 'admin-finance.html';
+                    window.location.href = 'admin-dashboard.html';
                 } else {
                     window.location.href = 'dashboard.html';
                 }

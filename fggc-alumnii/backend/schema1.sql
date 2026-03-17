@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
     department VARCHAR(100),
     phone VARCHAR(20),
     is_admin BOOLEAN DEFAULT FALSE,
+    payment_status ENUM('Paid', 'Pending', 'Overdue') DEFAULT 'Pending',
+    last_payment_date DATETIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
