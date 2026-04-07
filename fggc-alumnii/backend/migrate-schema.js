@@ -30,6 +30,18 @@ async function migrate() {
         await pool.execute(createNewsTable);
         console.log('Created news table.');
         
+        // Add document column to news table
+        try {
+            await pool.execute('ALTER TABLE news ADD COLUMN document VARCHAR(255);');
+            console.log('Added document column to news table.');
+        } catch(e) {
+            if (e.code === 'ER_DUP_FIELDNAME') {
+                console.log('document column already exists.');
+            } else {
+                throw e;
+            }
+        }
+
         console.log('Migration completed successfully.');
     } catch(err) {
         console.error('Migration failed:', err);
