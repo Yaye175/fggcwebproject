@@ -30,7 +30,7 @@ const api = {
         const response = await fetch(`${API_URL}${endpoint}`, {
             method: 'GET',
             headers: api.getHeaders(),
-            credentials: 'include'
+            credentials: 'same-origin'
         });
         return api.handleResponse(response);
     },
@@ -40,7 +40,7 @@ const api = {
         const response = await fetch(`${API_URL}${endpoint}`, {
             method: 'POST',
             headers: api.getHeaders(),
-            credentials: 'include',
+            credentials: 'same-origin',
             body: JSON.stringify(payload)
         });
         return api.handleResponse(response);
@@ -51,7 +51,7 @@ const api = {
         const response = await fetch(`${API_URL}${endpoint}`, {
             method: 'PUT',
             headers: api.getHeaders(),
-            credentials: 'include',
+            credentials: 'same-origin',
             body: JSON.stringify(payload)
         });
         return api.handleResponse(response);

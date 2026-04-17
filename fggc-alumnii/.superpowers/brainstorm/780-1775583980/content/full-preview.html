@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FGGC Alumni — Full Design Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: #1a1a2e; color: #3D3D3D; }
+
+  /* Page label */
+  .page-label {
+    text-align: center;
+    padding: 1.5rem 1rem 0.75rem;
+    color: rgba(255,255,255,0.45);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* ── Shared floating pill nav ── */
+  .glass-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 1.25rem;
+    border-radius: 50px;
+    margin: 0 1.5rem;
+  }
+  .glass-nav.light {
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.95);
+    box-shadow: 0 4px 24px rgba(13,43,78,0.10);
+  }
+  .glass-nav.dark {
+    background: rgba(255,255,255,0.11);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 0.8rem; font-weight: 700; }
+  .glass-nav.light .nav-logo { color: #0D2B4E; }
+  .glass-nav.dark .nav-logo { color: #5BAACC; }
+  .nav-links { display: flex; gap: 1rem; align-items: center; }
+  .glass-nav.light .nav-link { color: #7A7A8C; font-size: 0.62rem; font-weight: 500; }
+  .glass-nav.dark .nav-link { color: rgba(255,255,255,0.6); font-size: 0.62rem; font-weight: 500; }
+  .nav-link.active-link { color: #0D2B4E !important; font-weight: 600; }
+  .nav-link.active-link::after { content:''; display:block; width:4px; height:4px; background:#5BAACC; border-radius:50%; margin: 2px auto 0; }
+  .nav-btn {
+    font-size: 0.58rem; font-weight: 700; padding: 0.3rem 0.75rem;
+    border-radius: 20px; border: none; cursor: pointer;
+  }
+  .nav-btn.primary-btn { background: #0D2B4E; color: #5BAACC; }
+  .glass-nav.dark .nav-btn.primary-btn { background: #5BAACC; color: #0D2B4E; }
+  .nav-btn.secondary-btn { background: transparent; border: 1.5px solid rgba(255,255,255,0.4); color: rgba(255,255,255,0.8); }
+
+  /* ── Glass card ── */
+  .glass-card {
+    background: rgba(255,255,255,0.60);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.92);
+    border-radius: 18px;
+    box-shadow: 0 8px 40px rgba(13,43,78,0.09);
+  }
+  .glass-card.dark-glass {
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 16px 56px rgba(0,0,0,0.25);
+  }
+
+  /* ── Blob ── */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    pointer-events: none;
+  }
+
+  /* ── Buttons ── */
+  .btn-primary { background: #5BAACC; color: #0D2B4E; border: none; border-radius: 20px; padding: 0.5rem 1.25rem; font-size: 0.65rem; font-weight: 700; cursor: pointer; font-family: 'Inter',sans-serif; }
+  .btn-navy { background: #0D2B4E; color: #5BAACC; border: none; border-radius: 20px; padding: 0.5rem 1.25rem; font-size: 0.65rem; font-weight: 700; cursor: pointer; font-family: 'Inter',sans-serif; }
+  .btn-ghost { background: transparent; color: #0D2B4E; border: 1.5px solid #0D2B4E; border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.62rem; font-weight: 600; cursor: pointer; font-family: 'Inter',sans-serif; }
+
+  /* ── Page wrappers ── */
+  .page-wrap {
+    max-width: 900px;
+    margin: 0 auto 3rem;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+  }
+
+  /* ════════════════════════════════
+     PAGE 1 — HOMEPAGE
+  ════════════════════════════════ */
+  .home-hero {
+    background: linear-gradient(160deg, #0D2B4E 0%, #112f57 60%, #0a2540 100%);
+    padding: 1.25rem 0 2.5rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 340px;
+  }
+  .home-hero .blob1 { top:-40px; right:-40px; width:200px; height:200px; background:rgba(91,170,204,0.14); }
+  .home-hero .blob2 { bottom:-60px; left:-30px; width:240px; height:240px; background:rgba(91,170,204,0.08); }
+  .home-hero .blob3 { top:60px; left:40%; width:120px; height:120px; background:rgba(255,255,255,0.04); }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 2rem 0.5rem;
+  }
+  .hero-glass-card {
+    text-align: center;
+    padding: 2rem 2.5rem;
+    max-width: 480px;
+    width: 100%;
+  }
+  .hero-pill {
+    display: inline-block;
+    background: rgba(91,170,204,0.18);
+    color: #5BAACC;
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.85rem;
+    border-radius: 20px;
+    margin-bottom: 0.85rem;
+    border: 1px solid rgba(91,170,204,0.3);
+  }
+  .hero-h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #FEFCF8;
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+  .hero-sub {
+    color: rgba(255,255,255,0.58);
+    font-size: 0.7rem;
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Below-fold */
+  .home-below {
+    background: linear-gradient(160deg, #F7F3ED 0%, #EDE5D8 100%);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .home-below .blob4 { top:-40px; right:-20px; width:180px; height:180px; background:rgba(91,170,204,0.12); }
+  .home-below .blob5 { bottom:-50px; left:-30px; width:200px; height:200px; background:rgba(13,43,78,0.05); }
+  .bento {
+    display: grid;
+    grid-template-columns: 1fr 1fr 260px;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+  .bento-story { grid-column: 1; grid-row: 1; }
+  .bento-events { grid-column: 2; grid-row: 1; }
+  .bento-sidebar { grid-column: 3; grid-row: 1; }
+  .section-label-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.85rem;
+  }
+  .section-label-row h3 {
+    font-family: 'Playfair Display', serif;
+    color: #0D2B4E;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .section-label-row::after { content:''; flex:1; height:1px; background: rgba(13,43,78,0.12); }
+  .story-img { width:100%; height:80px; object-fit:cover; border-radius:10px; margin-bottom:0.6rem; background:linear-gradient(135deg, #5BAACC33, #0D2B4E22); display:flex; align-items:center; justify-content:center; }
+  .event-card { padding: 0.65rem 0.85rem; border-radius: 12px; margin-bottom: 0.5rem; border-top: 2.5px solid #5BAACC; }
+  .sidebar-game { border-radius: 12px; padding: 0.65rem 0.75rem; margin-bottom: 0.5rem; background: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.8); }
+
+  /* ════════════════════════════════
+     PAGE 2 — NEWS
+  ════════════════════════════════ */
+  .news-page {
+    background: linear-gradient(160deg, #F7F3ED 0%, #EDE5D8 100%);
+    padding: 1.25rem 0 2rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 400px;
+  }
+  .news-page .blob1 { top:-30px; right:-20px; width:160px; height:160px; background:rgba(91,170,204,0.13); }
+  .news-page .blob2 { bottom:-40px; left:-20px; width:180px; height:180px; background:rgba(13,43,78,0.06); }
+  .news-inner { padding: 1.5rem 2rem; position: relative; z-index:1; }
+  .page-hero-text { margin-bottom: 1.25rem; }
+  .page-hero-text h2 { font-family:'Playfair Display',serif; color:#0D2B4E; font-size:1.4rem; font-weight:700; margin-bottom:0.25rem; }
+  .page-hero-text p { color:#7A7A8C; font-size:0.62rem; }
+  .pill-tabs { display:flex; gap:0.4rem; margin-bottom:1.25rem; }
+  .pill-tab { padding:0.35rem 0.9rem; border-radius:20px; font-size:0.6rem; font-weight:600; cursor:pointer; border:none; font-family:'Inter',sans-serif; }
+  .pill-tab.active { background:#0D2B4E; color:#5BAACC; }
+  .pill-tab:not(.active) { background:rgba(255,255,255,0.55); color:#7A7A8C; border:1px solid rgba(255,255,255,0.9); }
+  .news-item-card { display:flex; gap:0.85rem; align-items:flex-start; padding:0.85rem 1rem; margin-bottom:0.75rem; }
+  .news-thumb { width:64px; height:54px; border-radius:10px; background:linear-gradient(135deg,#5BAACC44,#0D2B4E22); flex-shrink:0; display:flex; align-items:center; justify-content:center; color:rgba(13,43,78,0.3); font-size:0.55rem; }
+  .news-body h4 { font-family:'Playfair Display',serif; color:#0D2B4E; font-size:0.75rem; font-weight:700; margin-bottom:0.2rem; }
+  .news-body .news-meta { color:#7A7A8C; font-size:0.52rem; margin-bottom:0.3rem; }
+  .news-body p { color:#5A5A6A; font-size:0.58rem; line-height:1.5; }
+  .doc-pill { display:inline-flex; align-items:center; gap:0.3rem; background:rgba(13,43,78,0.06); color:#0D2B4E; border-radius:12px; padding:0.22rem 0.6rem; font-size:0.5rem; font-weight:600; margin-top:0.4rem; border:1px solid rgba(13,43,78,0.1); }
+
+  /* ════════════════════════════════
+     PAGE 3 — GALLERY
+  ════════════════════════════════ */
+  .gallery-page {
+    background: linear-gradient(160deg, #F7F3ED 0%, #EDE5D8 100%);
+    padding: 1.25rem 0 2rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 380px;
+  }
+  .gallery-page .blob1 { top:-20px; right:-10px; width:140px; height:140px; background:rgba(91,170,204,0.14); }
+  .gallery-inner { padding: 1.5rem 2rem; position:relative; z-index:1; }
+  .gallery-masonry { columns: 3; gap: 0.75rem; }
+  .gal-item { break-inside: avoid; margin-bottom: 0.75rem; border-radius: 14px; overflow: hidden; box-shadow: 0 6px 24px rgba(13,43,78,0.09); border: 1px solid rgba(255,255,255,0.9); }
+  .gal-img { width:100%; display:block; }
+  .gal-caption { background:rgba(255,255,255,0.65); backdrop-filter:blur(8px); padding:0.4rem 0.6rem; font-size:0.52rem; color:#3D3D3D; font-weight:500; }
+
+  /* ════════════════════════════════
+     PAGE 4 — LOGIN
+  ════════════════════════════════ */
+  .login-page {
+    background: linear-gradient(160deg, #0D2B4E 0%, #112f57 60%, #0a2540 100%);
+    padding: 1.25rem 0 2.5rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+  }
+  .login-page .blob1 { top:-30px; right:-20px; width:160px; height:160px; background:rgba(91,170,204,0.12); }
+  .login-page .blob2 { bottom:-50px; left:-30px; width:200px; height:200px; background:rgba(91,170,204,0.07); }
+  .login-inner { flex:1; display:flex; align-items:center; justify-content:center; padding:1.5rem; position:relative; z-index:1; }
+  .login-card { width:100%; max-width:320px; padding:1.75rem 1.5rem; text-align:center; }
+  .login-card h2 { font-family:'Playfair Display',serif; color:#FEFCF8; font-size:1.25rem; font-weight:700; margin-bottom:0.3rem; }
+  .login-card .login-sub { color:rgba(255,255,255,0.5); font-size:0.6rem; margin-bottom:1.25rem; }
+  .form-field { background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.18); border-radius:12px; padding:0.6rem 0.85rem; width:100%; margin-bottom:0.65rem; color:rgba(255,255,255,0.8); font-size:0.62rem; font-family:'Inter',sans-serif; }
+  .form-field::placeholder { color:rgba(255,255,255,0.35); }
+  .login-btn { width:100%; background:#5BAACC; color:#0D2B4E; border:none; border-radius:20px; padding:0.6rem; font-size:0.65rem; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif; margin-top:0.25rem; }
+  .login-switch { color:rgba(255,255,255,0.45); font-size:0.55rem; margin-top:0.85rem; }
+  .login-switch a { color:#5BAACC; }
+
+  /* ════════════════════════════════
+     PAGE 5 — DASHBOARD
+  ════════════════════════════════ */
+  .dash-page {
+    background: linear-gradient(160deg, #F7F3ED 0%, #EDE5D8 100%);
+    padding: 1.25rem 0 2rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 380px;
+  }
+  .dash-page .blob1 { top:-20px; right:-15px; width:150px; height:150px; background:rgba(91,170,204,0.12); }
+  .dash-inner { padding:1.5rem 2rem; position:relative; z-index:1; }
+  .dash-greeting { margin-bottom: 1.25rem; }
+  .dash-greeting h2 { font-family:'Playfair Display',serif; color:#0D2B4E; font-size:1.2rem; font-weight:700; margin-bottom:0.2rem; }
+  .dash-greeting p { color:#7A7A8C; font-size:0.6rem; }
+  .stat-row { display:grid; grid-template-columns: repeat(3, 1fr); gap:0.75rem; margin-bottom:1.25rem; }
+  .stat-card { padding:0.85rem 0.9rem; border-radius:14px; }
+  .stat-card.paid-stat { background:#2E8B5722; border:1.5px solid #2E8B5744; }
+  .stat-card.pending-stat { background:rgba(91,170,204,0.12); border:1.5px solid rgba(91,170,204,0.3); }
+  .stat-card.navy-stat { background:#0D2B4E; }
+  .stat-card .stat-val { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; margin-bottom:0.15rem; }
+  .stat-card.paid-stat .stat-val { color:#2E8B57; }
+  .stat-card.pending-stat .stat-val { color:#0D2B4E; }
+  .stat-card.navy-stat .stat-val { color:#5BAACC; }
+  .stat-card .stat-lbl { font-size:0.5rem; font-weight:600; }
+  .stat-card.paid-stat .stat-lbl, .stat-card.pending-stat .stat-lbl { color:#7A7A8C; }
+  .stat-card.navy-stat .stat-lbl { color:rgba(255,255,255,0.55); }
+  .month-row { display:grid; grid-template-columns:repeat(12,1fr); gap:0.3rem; margin-top:0.3rem; }
+  .month-chip { border-radius:6px; padding:0.3rem 0; text-align:center; font-size:0.42rem; font-weight:700; }
+  .month-chip.paid { background:#2E8B57; color:white; }
+  .month-chip.unpaid { background:rgba(13,43,78,0.08); color:#7A7A8C; border:1px solid rgba(13,43,78,0.1); }
+  .month-chip.current { border:1.5px solid #5BAACC; }
+
+  /* ════════════════════════════════
+     PAGE 6 — PRO ADMIN DASHBOARD
+  ════════════════════════════════ */
+  .admin-page {
+    background: linear-gradient(160deg, #F7F3ED 0%, #EDE5D8 100%);
+    padding: 1.25rem 0 2rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 600px;
+  }
+  .admin-page .blob1 { top:-20px; right:-15px; width:160px; height:160px; background:rgba(91,170,204,0.1); }
+  .admin-inner { padding: 1.5rem 2rem; position:relative; z-index:1; }
+  .admin-nav-badge { background:#0D2B4E; color:#5BAACC; font-size:0.48rem; font-weight:700; padding:0.2rem 0.55rem; border-radius:8px; }
+  .admin-stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:0.7rem; margin-bottom:1.25rem; }
+  .admin-stat { padding:0.75rem 0.85rem; border-radius:12px; }
+  .admin-stat .a-val { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:#0D2B4E; margin-bottom:0.1rem; }
+  .admin-stat .a-lbl { font-size:0.5rem; color:#7A7A8C; font-weight:600; }
+  .admin-stat.overdue-stat .a-val { color:#c0392b; }
+  .admin-stat.paid-stat2 .a-val { color:#2E8B57; }
+  .admin-table-wrap { overflow:auto; }
+  .admin-table { width:100%; border-collapse:collapse; font-size:0.52rem; }
+  .admin-table th { background:#0D2B4E; color:#5BAACC; font-weight:700; padding:0.5rem 0.6rem; text-align:left; font-size:0.5rem; }
+  .admin-table th:first-child { border-radius:8px 0 0 8px; }
+  .admin-table th:last-child { border-radius:0 8px 8px 0; }
+  .admin-table td { padding:0.45rem 0.6rem; color:#3D3D3D; border-bottom:1px solid rgba(13,43,78,0.06); }
+  .admin-table tr:hover td { background:rgba(91,170,204,0.06); }
+  .status-badge { display:inline-block; padding:0.18rem 0.55rem; border-radius:10px; font-size:0.48rem; font-weight:700; }
+  .status-paid { background:#2E8B5722; color:#2E8B57; }
+  .status-pending { background:rgba(91,170,204,0.15); color:#0D2B4E; }
+  .status-overdue { background:rgba(192,57,43,0.1); color:#c0392b; }
+  .remind-btn { background:rgba(13,43,78,0.08); color:#0D2B4E; border:none; border-radius:10px; font-size:0.48rem; font-weight:700; padding:0.22rem 0.55rem; cursor:pointer; font-family:'Inter',sans-serif; }
+  .remind-btn:hover { background:#0D2B4E; color:#5BAACC; }
+  .upload-section { margin-top:1.5rem; }
+  .upload-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .upload-card { padding:1rem; border-radius:16px; }
+  .upload-card h4 { font-family:'Playfair Display',serif; color:#0D2B4E; font-size:0.8rem; font-weight:700; margin-bottom:0.85rem; }
+  .form-row { margin-bottom:0.55rem; }
+  .form-label { display:block; color:#7A7A8C; font-size:0.5rem; font-weight:600; margin-bottom:0.2rem; }
+  .form-input { width:100%; background:rgba(255,255,255,0.7); border:1.5px solid rgba(13,43,78,0.1); border-radius:10px; padding:0.45rem 0.65rem; font-size:0.55rem; color:#0D2B4E; font-family:'Inter',sans-serif; }
+  .form-input::placeholder { color:rgba(13,43,78,0.3); }
+  .file-drop { background:rgba(13,43,78,0.04); border:1.5px dashed rgba(13,43,78,0.18); border-radius:10px; padding:0.75rem; text-align:center; color:rgba(13,43,78,0.35); font-size:0.5rem; margin-bottom:0.55rem; }
+  .submit-btn { background:#0D2B4E; color:#5BAACC; border:none; border-radius:20px; padding:0.4rem 1rem; font-size:0.55rem; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif; }
+
+  /* ════════════════════════════════
+     PAGE 7 — FINANCE ADMIN
+  ════════════════════════════════ */
+  .fin-page {
+    background: linear-gradient(160deg, #0D2B4E 0%, #112f57 100%);
+    padding: 1.25rem 0 2rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 500px;
+  }
+  .fin-page .blob1 { top:-30px; right:-20px; width:180px; height:180px; background:rgba(91,170,204,0.1); }
+  .fin-page .blob2 { bottom:-40px; left:-20px; width:160px; height:160px; background:rgba(91,170,204,0.06); }
+  .fin-inner { padding:1.5rem 2rem; position:relative; z-index:1; }
+  .fin-header { margin-bottom:1.25rem; }
+  .fin-header h2 { font-family:'Playfair Display',serif; color:#FEFCF8; font-size:1.2rem; font-weight:700; margin-bottom:0.2rem; }
+  .fin-header p { color:rgba(255,255,255,0.45); font-size:0.58rem; }
+  .fin-stat-row { display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1.25rem; }
+  .fin-stat { padding:0.85rem 0.9rem; border-radius:14px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14); }
+  .fin-stat .f-val { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; color:#5BAACC; margin-bottom:0.15rem; }
+  .fin-stat .f-lbl { font-size:0.5rem; color:rgba(255,255,255,0.5); font-weight:600; }
+  .fin-table-wrap { background:rgba(255,255,255,0.07); border-radius:16px; overflow:auto; border:1px solid rgba(255,255,255,0.12); }
+  .fin-table { width:100%; border-collapse:collapse; font-size:0.52rem; }
+  .fin-table th { background:rgba(255,255,255,0.1); color:#5BAACC; font-weight:700; padding:0.55rem 0.65rem; text-align:left; font-size:0.5rem; }
+  .fin-table td { padding:0.45rem 0.65rem; color:rgba(255,255,255,0.75); border-bottom:1px solid rgba(255,255,255,0.07); }
+  .fin-table tr:hover td { background:rgba(91,170,204,0.07); }
+  .month-mini { display:flex; gap:2px; flex-wrap:wrap; }
+  .mm-chip { width:14px; height:14px; border-radius:3px; font-size:0.38rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
+  .mm-paid { background:#2E8B57; color:white; }
+  .mm-unpaid { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.35); }
+  .edit-btn { background:#5BAACC; color:#0D2B4E; border:none; border-radius:8px; font-size:0.48rem; font-weight:700; padding:0.22rem 0.55rem; cursor:pointer; font-family:'Inter',sans-serif; }
+
+  /* ════ SECTION GROUP ════ */
+  .section-divider { text-align:center; padding:2.5rem 1rem 0.5rem; }
+  .section-divider-label { display:inline-block; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); border-radius:30px; padding:0.35rem 1.25rem; color:rgba(255,255,255,0.55); font-size:0.65rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ SECTION: PUBLIC PAGES ═══════════════════ -->
+<div class="section-divider"><span class="section-divider-label">Public Pages</span></div>
+
+<!-- ═══════════════════ PAGE 1: HOMEPAGE ═══════════════════ -->
+<div class="page-label">— Homepage —</div>
+<div class="page-wrap">
+  <div class="home-hero">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+
+    <!-- Floating pill nav (dark variant) -->
+    <div style="position:relative;z-index:3;margin-bottom:1.5rem;padding-top:0.25rem;">
+      <div class="glass-nav dark">
+        <div class="nav-logo">FGGC Alumni</div>
+        <div class="nav-links">
+          <span class="nav-link active-link">Home</span>
+          <span class="nav-link">About</span>
+          <span class="nav-link">News</span>
+          <span class="nav-link">Gallery</span>
+          <button class="nav-btn primary-btn">Login</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero glass card -->
+    <div class="hero-content">
+      <div class="glass-card dark-glass hero-glass-card">
+        <div class="hero-pill">FGGC Gboko · FCT Chapter</div>
+        <h1 class="hero-h1">Welcome Home,<br>Alumni!</h1>
+        <p class="hero-sub">Connect with old friends, stay updated on events, and support the next generation of leaders.</p>
+        <button class="btn-primary">Join the Community →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Below fold: warm cream -->
+  <div class="home-below">
+    <div class="blob blob4"></div>
+    <div class="blob blob5"></div>
+
+    <!-- Floating pill nav (light variant) for when user scrolls past hero -->
+    <div style="position:relative;z-index:3;margin-bottom:1.5rem;">
+      <div class="glass-nav light">
+        <div class="nav-logo" style="color:#0D2B4E;">FGGC Alumni</div>
+        <div class="nav-links">
+          <span class="nav-link active-link">Home</span>
+          <span class="nav-link">About</span>
+          <span class="nav-link">News</span>
+          <span class="nav-link">Gallery</span>
+          <button class="nav-btn primary-btn">Login</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bento">
+      <!-- Story -->
+      <div class="bento-story">
+        <div class="section-label-row"><h3>Focus Story</h3></div>
+        <div class="glass-card" style="padding:1rem;">
+          <div class="story-img"><span style="color:rgba(13,43,78,0.2);font-size:0.55rem;">📸 Story Image</span></div>
+          <h4 style="font-family:'Playfair Display',serif;color:#0D2B4E;font-size:0.82rem;font-weight:700;margin-bottom:0.3rem;">Alumni Make Waves in Abuja Tech Scene</h4>
+          <p style="color:#7A7A8C;font-size:0.5rem;margin-bottom:0.4rem;">Published 5 April 2026</p>
+          <p style="color:#5A5A6A;font-size:0.58rem;line-height:1.6;">Three FGGC Gboko alumni have co-founded a fintech startup that recently closed a $2M seed round, bringing digital banking to underserved communities across the FCT...</p>
+        </div>
+      </div>
+
+      <!-- Events -->
+      <div class="bento-events">
+        <div class="section-label-row"><h3>Upcoming Events</h3></div>
+        <div>
+          <div class="glass-card event-card" style="margin-bottom:0.6rem;">
+            <p style="color:#5BAACC;font-size:0.48rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.2rem;">June 14, 2026 · Abuja</p>
+            <h4 style="font-family:'Playfair Display',serif;color:#0D2B4E;font-size:0.78rem;font-weight:700;margin-bottom:0.2rem;">Annual Alumni Dinner</h4>
+            <p style="color:#7A7A8C;font-size:0.55rem;">Sheraton Hotel, Maitama. Black tie. All members welcome.</p>
+          </div>
+          <div class="glass-card event-card">
+            <p style="color:#5BAACC;font-size:0.48rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.2rem;">Aug 3, 2026 · FGGC Campus</p>
+            <h4 style="font-family:'Playfair Display',serif;color:#0D2B4E;font-size:0.78rem;font-weight:700;margin-bottom:0.2rem;">Back-to-School Drive</h4>
+            <p style="color:#7A7A8C;font-size:0.55rem;">Supply donations for current students. Volunteer sign-up open.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="bento-sidebar">
+        <div class="section-label-row"><h3>Weekly Challenges</h3></div>
+        <div class="sidebar-game">
+          <p style="color:#0D2B4E;font-size:0.6rem;font-weight:700;margin-bottom:0.3rem;">Sudoku</p>
+          <div style="background:rgba(13,43,78,0.05);border-radius:8px;height:70px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(13,43,78,0.08);">
+            <span style="color:rgba(13,43,78,0.25);font-size:0.55rem;"># Puzzle embed</span>
+          </div>
+        </div>
+        <div class="sidebar-game">
+          <p style="color:#0D2B4E;font-size:0.6rem;font-weight:700;margin-bottom:0.3rem;">Daily Crossword</p>
+          <div style="background:rgba(13,43,78,0.05);border-radius:8px;padding:0.65rem;text-align:center;border:1px solid rgba(13,43,78,0.08);">
+            <p style="color:#7A7A8C;font-size:0.5rem;margin-bottom:0.45rem;">Opens in a new tab</p>
+            <button class="btn-navy" style="font-size:0.5rem;padding:0.28rem 0.7rem;">Play Crossword →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE 2: ABOUT ═══════════════════ -->
+<div class="page-label">— About —</div>
+<div class="page-wrap">
+  <div class="news-page">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+
+    <div style="position:relative;z-index:3;margin-bottom:1rem;">
+      <div class="glass-nav light">
+        <div class="nav-logo">FGGC Alumni</div>
+        <div class="nav-links">
+          <span class="nav-link">Home</span>
+          <span class="nav-link active-link">About</span>
+          <span class="nav-link">News</span>
+          <span class="nav-link">Gallery</span>
+          <button class="nav-btn primary-btn">Login</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="news-inner">
+      <div class="page-hero-text">
+        <h2>About Us</h2>
+        <p>The FCT Chapter of the FGGC Gboko Alumnae Association.</p>
+      </div>
+
+      <!-- Mission glass card -->
+      <div class="glass-card" style="padding:1.1rem 1.25rem; margin-bottom:0.85rem;">
+        <div style="color:#5BAACC;font-size:0.48rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.35rem;">Our Mission</div>
+        <h4 style="font-family:'Playfair Display',serif;color:#0D2B4E;font-size:0.85rem;font-weight:700;margin-bottom:0.4rem;">Connecting, Celebrating & Giving Back</h4>
+        <p style="color:#5A5A6A;font-size:0.58rem;line-height:1.65;">We are a registered chapter of the FGGC Gboko Alumnae Association, dedicated to fostering lifelong bonds among old girls, supporting the institution, and mentoring the next generation of female leaders in Nigeria.</p>
+      </div>
+
+      <!-- Stats row -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:0.85rem;">
+        <div class="glass-card" style="padding:0.85rem;text-align:center;">
+          <div style="font-family:'Playfair Display',serif;color:#0D2B4E;font-size:1.2rem;font-weight:700;">200+</div>
+          <div style="color:#7A7A8C;font-size:0.5rem;font-weight:600;">Active Members</div>
+        </div>
+        <div class="glass-card" style="padding:0.85rem;text-align:center;">
+          <div style="font-family:'Playfair Display',serif;color:#0D2B4E;font-size:1.2rem;font-weight:700;">1985</div>
+          <div style="color:#7A7A8C;font-size:0.5rem;font-weight:600;">School Founded</div>
+        </div>
+        <div class="glass-card" style="padding:0.85rem;text-align:center;background:#0D2B4E;">
+          <div style="font-family:'Playfair Display',serif;color:#5BAACC;font-size:1.2rem;font-weight:700;">FCT</div>
+          <div style="color:rgba(255,255,255,0.55);font-size:0.5rem;font-weight:600;">Chapter Location</div>
+        </div>
+      </div>
+
+      <!-- Executives -->
+      <div class="glass-card" style="padding:1rem;">
+        <div class="section-label-row" style="margin-bottom:0.65rem;"><h3 style="font-size:0.78rem;">Chapter Executives</h3></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;">
+          <div style="text-align:center;">
+            <div style="width:38px;height:38px;background:linear-gradient(135deg,#5BAACC44,#0D2B4E22);border-radius:50%;margin:0 auto 0.35rem;display:flex;align-items:center;justify-content:center;font-size:1rem;">👩</div>
+            <div style="font-family:'Playfair Display',serif;color:#0D2B4E;font-size:0.6rem;font-weight:700;">Adaeze Okafor</div>
+            <div style="color:#7A7A8C;font-size:0.48rem;">President</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:38px;height:38px;background:linear-gradient(135deg,#E8DDD0,#c9b99a);border-radius:50%;margin:0 auto 0.35rem;display:flex;align-items:center;justify-content:center;font-size:1rem;">👩</div>
+            <div style="font-family:'Playfair Display',serif;color:#0D2B4E;font-size:0.6rem;font-weight:700;">Ngozi Eze</div>
+            <div style="color:#7A7A8C;font-size:0.48rem;">Secretary General</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:38px;height:38px;background:linear-gradient(135deg,#0D2B4E22,#5BAACC22);border-radius:50%;margin:0 auto 0.35rem;display:flex;align-items:center;justify-content:center;font-size:1rem;">👩</div>
+            <div style="font-family:'Playfair Display',serif;color:#0D2B4E;font-size:0.6rem;font-weight:700;">Chisom Aniukwu</div>
+            <div style="color:#7A7A8C;font-size:0.48rem;">Financial Secretary</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE 4: NEWS ═══════════════════ -->
+<div class="page-label">— News &amp; Archives —</div>
+<div class="page-wrap">
+  <div class="news-page">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+
+    <div style="position:relative;z-index:3;margin-bottom:1rem;">
+      <div class="glass-nav light">
+        <div class="nav-logo">FGGC Alumni</div>
+        <div class="nav-links">
+          <span class="nav-link">Home</span>
+          <span class="nav-link">About</span>
+          <span class="nav-link active-link">News</span>
+          <span class="nav-link">Gallery</span>
+          <button class="nav-btn primary-btn">Login</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="news-inner">
+      <div class="page-hero-text">
+        <h2>News & Archives</h2>
+        <p>Stay informed with the latest updates and meeting records.</p>
+      </div>
+
+      <!-- Glass pill tab switcher -->
+      <div class="pill-tabs">
+        <button class="pill-tab active">Latest News</button>
+        <button class="pill-tab">Meeting Minutes</button>
+      </div>
+
+      <!-- News items -->
+      <div class="glass-card news-item-card">
+        <div class="news-thumb">📰</div>
+        <div class="news-body">
+          <h4>Alumni Make Waves in Abuja Tech Scene</h4>
+          <div class="news-meta">5 April 2026</div>
+          <p>Three FGGC Gboko alumni co-founded a fintech startup that recently closed a $2M seed round, bringing digital banking to underserved communities...</p>
+        </div>
+      </div>
+
+      <div class="glass-card news-item-card">
+        <div class="news-thumb">📋</div>
+        <div class="news-body">
+          <h4>Q1 2026 Executive Meeting — Summary</h4>
+          <div class="news-meta">28 March 2026</div>
+          <p>Key resolutions from the first quarter meeting: annual dinner date confirmed, scholarship fund approved, new membership drive launched...</p>
+          <div class="doc-pill">📄 Download Minutes.pdf</div>
+        </div>
+      </div>
+
+      <div class="glass-card news-item-card">
+        <div class="news-thumb" style="background:linear-gradient(135deg,#5BAACC33,#0D2B4E22);overflow:hidden;">🖼</div>
+        <div class="news-body">
+          <h4>Scholarship Recipient Spotlight — Amara Obi</h4>
+          <div class="news-meta">12 March 2026</div>
+          <p>Meet Amara, the 2025 FGGC Alumni scholarship recipient now studying medicine at the University of Abuja...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE 5: GALLERY ═══════════════════ -->
+<div class="page-label">— Gallery —</div>
+<div class="page-wrap">
+  <div class="gallery-page">
+    <div class="blob blob1"></div>
+    <div style="position:relative;z-index:3;margin-bottom:1rem;">
+      <div class="glass-nav light">
+        <div class="nav-logo">FGGC Alumni</div>
+        <div class="nav-links">
+          <span class="nav-link">Home</span>
+          <span class="nav-link">About</span>
+          <span class="nav-link">News</span>
+          <span class="nav-link active-link">Gallery</span>
+          <button class="nav-btn primary-btn">Login</button>
+        </div>
+      </div>
+    </div>
+    <div class="gallery-inner">
+      <div class="page-hero-text">
+        <h2>Memories & Events</h2>
+        <p>A collection of our proudest moments. Click any image to view full size.</p>
+      </div>
+      <div class="gallery-masonry">
+        <div class="gal-item"><div style="height:90px;background:linear-gradient(135deg,#5BAACC55,#0D2B4E33);display:flex;align-items:center;justify-content:center;color:rgba(13,43,78,0.3);font-size:1.2rem;">🎓</div><div class="gal-caption">Graduation Day 2024</div></div>
+        <div class="gal-item"><div style="height:120px;background:linear-gradient(135deg,#E8DDD0,#c9b99a);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🍽</div><div class="gal-caption">Annual Dinner 2023</div></div>
+        <div class="gal-item"><div style="height:80px;background:linear-gradient(135deg,#0D2B4E22,#5BAACC33);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📚</div><div class="gal-caption">Back-to-School Drive</div></div>
+        <div class="gal-item"><div style="height:110px;background:linear-gradient(135deg,#5BAACC33,#F7F3ED);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">🏆</div><div class="gal-caption">Award Ceremony 2024</div></div>
+        <div class="gal-item"><div style="height:85px;background:linear-gradient(135deg,#E8DDD0,#0D2B4E22);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">👩‍👩‍👧‍👧</div><div class="gal-caption">Class Reunion 2022</div></div>
+        <div class="gal-item"><div style="height:95px;background:linear-gradient(135deg,#0D2B4E33,#5BAACC22);display:flex;align-items:center;justify-content:center;font-size:1.2rem;">🌟</div><div class="gal-caption">Staff Line-Up</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE 6: LOGIN ═══════════════════ -->
+<div class="page-label">— Login —</div>
+<div class="page-wrap">
+  <div class="login-page">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div style="position:relative;z-index:3;">
+      <div class="glass-nav dark">
+        <div class="nav-logo">FGGC Alumni</div>
+        <div class="nav-links">
+          <span class="nav-link">Home</span>
+          <button class="nav-btn secondary-btn">Sign Up</button>
+        </div>
+      </div>
+    </div>
+    <div class="login-inner">
+      <div class="glass-card dark-glass login-card">
+        <h2>Welcome Back</h2>
+        <p class="login-sub">Sign in to your alumni account</p>
+        <input class="form-field" placeholder="Email address" type="email">
+        <input class="form-field" placeholder="Password" type="password">
+        <button class="login-btn">Login →</button>
+        <p class="login-switch">Don't have an account? <a href="#">Sign up here</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE 7: DASHBOARD ═══════════════════ -->
+<div class="page-label">— User Dashboard —</div>
+<div class="page-wrap" style="margin-bottom:4rem;">
+  <div class="dash-page">
+    <div class="blob blob1"></div>
+    <div style="position:relative;z-index:3;margin-bottom:1rem;">
+      <div class="glass-nav light">
+        <div class="nav-logo">FGGC Alumni</div>
+        <div class="nav-links">
+          <span class="nav-link">Home</span>
+          <span class="nav-link active-link">Dashboard</span>
+          <button class="nav-btn primary-btn" style="background:transparent;border:1.5px solid #0D2B4E;color:#0D2B4E;">Logout</button>
+        </div>
+      </div>
+    </div>
+    <div class="dash-inner">
+      <div class="dash-greeting">
+        <h2>Good afternoon, Chidinma 👋</h2>
+        <p>Here's your membership overview for 2026.</p>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stat-row">
+        <div class="glass-card stat-card paid-stat">
+          <div class="stat-val">Paid</div>
+          <div class="stat-lbl">Payment Status</div>
+        </div>
+        <div class="glass-card stat-card pending-stat">
+          <div class="stat-val">9 / 12</div>
+          <div class="stat-lbl">Months Paid</div>
+        </div>
+        <div class="glass-card stat-card navy-stat">
+          <div class="stat-val">2016</div>
+          <div class="stat-lbl">Graduation Year</div>
+        </div>
+      </div>
+
+      <!-- Monthly payment grid -->
+      <div class="glass-card" style="padding:1rem;">
+        <div class="section-label-row" style="margin-bottom:0.65rem;"><h3 style="font-size:0.78rem;">Monthly Breakdown — 2026</h3></div>
+        <div class="month-row">
+          <div class="month-chip paid">Jan</div>
+          <div class="month-chip paid">Feb</div>
+          <div class="month-chip paid">Mar</div>
+          <div class="month-chip paid current">Apr</div>
+          <div class="month-chip unpaid">May</div>
+          <div class="month-chip unpaid">Jun</div>
+          <div class="month-chip unpaid">Jul</div>
+          <div class="month-chip unpaid">Aug</div>
+          <div class="month-chip unpaid">Sep</div>
+          <div class="month-chip unpaid">Oct</div>
+          <div class="month-chip unpaid">Nov</div>
+          <div class="month-chip unpaid">Dec</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════ SECTION: ADMIN PAGES ═══════════════════ -->
+<div class="section-divider"><span class="section-divider-label">Admin Pages</span></div>
+
+<!-- ═══════════════════ PAGE 8: PRO ADMIN DASHBOARD ═══════════════════ -->
+<div class="page-label">— PRO Admin Dashboard —</div>
+<div class="page-wrap">
+  <div class="admin-page">
+    <div class="blob blob1"></div>
+
+    <!-- Nav (light) with PRO badge -->
+    <div style="position:relative;z-index:3;margin-bottom:1rem;">
+      <div class="glass-nav light">
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <div class="nav-logo" style="color:#0D2B4E;">FGGC Alumni</div>
+          <span class="admin-nav-badge">PRO</span>
+        </div>
+        <div class="nav-links">
+          <span class="nav-link active-link">Members</span>
+          <span class="nav-link">Posts</span>
+          <span class="nav-link">Gallery</span>
+          <button class="nav-btn primary-btn" style="background:transparent;border:1.5px solid #0D2B4E;color:#0D2B4E;">Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-inner">
+      <!-- Header -->
+      <div style="margin-bottom:1.25rem;">
+        <h2 style="font-family:'Playfair Display',serif;color:#0D2B4E;font-size:1.2rem;font-weight:700;margin-bottom:0.2rem;">Admin Overview</h2>
+        <p style="color:#7A7A8C;font-size:0.6rem;">Manage members, posts, gallery, and send reminders.</p>
+      </div>
+
+      <!-- Stat row -->
+      <div class="admin-stat-row">
+        <div class="glass-card admin-stat">
+          <div class="a-val">47</div>
+          <div class="a-lbl">Total Members</div>
+        </div>
+        <div class="glass-card admin-stat paid-stat2">
+          <div class="a-val">31</div>
+          <div class="a-lbl">Paid (Apr)</div>
+        </div>
+        <div class="glass-card admin-stat">
+          <div class="a-val" style="color:#e67e22;">10</div>
+          <div class="a-lbl">Pending</div>
+        </div>
+        <div class="glass-card admin-stat overdue-stat">
+          <div class="a-val">6</div>
+          <div class="a-lbl">Overdue</div>
+        </div>
+      </div>
+
+      <!-- Send all reminder action -->
+      <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem;">
+        <button style="background:#c0392b;color:white;border:none;border-radius:20px;font-size:0.55rem;font-weight:700;padding:0.4rem 1rem;cursor:pointer;font-family:'Inter',sans-serif;">
+          Send Reminder to All Unpaid →
+        </button>
+      </div>
+
+      <!-- Member table -->
+      <div class="glass-card" style="padding:0.1rem;margin-bottom:1.5rem;">
+        <div class="admin-table-wrap" style="border-radius:16px;overflow:hidden;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Year</th><th>Months Paid</th><th>Status</th><th>Reminder</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td><td style="font-weight:600;color:#0D2B4E;">Chidinma Obi</td><td>chidinma@mail.com</td><td>081x-xxx-xxxx</td><td>2016</td>
+                <td>Jan, Feb, Mar, Apr</td>
+                <td><span class="status-badge status-paid">Paid</span></td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>2</td><td style="font-weight:600;color:#0D2B4E;">Amara Eze</td><td>amara@mail.com</td><td>070x-xxx-xxxx</td><td>2018</td>
+                <td>Jan, Feb</td>
+                <td><span class="status-badge status-pending">Pending</span></td>
+                <td><button class="remind-btn">Remind</button></td>
+              </tr>
+              <tr>
+                <td>3</td><td style="font-weight:600;color:#0D2B4E;">Ngozi Okeke</td><td>ngozi@mail.com</td><td>080x-xxx-xxxx</td><td>2012</td>
+                <td>—</td>
+                <td><span class="status-badge status-overdue">Overdue</span></td>
+                <td><button class="remind-btn">Remind</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Upload forms section -->
+      <div class="upload-section">
+        <div class="section-label-row" style="margin-bottom:1rem;"><h3 style="font-size:0.85rem;">Post Content</h3></div>
+        <div class="upload-grid">
+          <!-- Post News/Story/Minutes -->
+          <div class="glass-card upload-card">
+            <h4>Post News / Story / Minutes</h4>
+            <div class="form-row">
+              <label class="form-label">Title</label>
+              <input class="form-input" placeholder="e.g. Q2 Meeting Summary" type="text">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Content</label>
+              <textarea class="form-input" rows="3" placeholder="Write the full post here..." style="resize:none;"></textarea>
+            </div>
+            <div class="form-row">
+              <label class="form-label">Image (optional)</label>
+              <div class="file-drop">📷 Drop image or click to upload</div>
+            </div>
+            <div class="form-row">
+              <label class="form-label">Document (PDF / DOC)</label>
+              <div class="file-drop">📎 Attach minutes or report</div>
+            </div>
+            <button class="submit-btn">Publish Post →</button>
+          </div>
+
+          <!-- Gallery Upload -->
+          <div class="glass-card upload-card">
+            <h4>Upload to Gallery</h4>
+            <div class="form-row">
+              <label class="form-label">Caption</label>
+              <input class="form-input" placeholder="e.g. Annual Dinner 2026" type="text">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Photo</label>
+              <div class="file-drop" style="min-height:80px;display:flex;align-items:center;justify-content:center;">
+                🖼 Drop photo here or click to browse
+              </div>
+            </div>
+            <button class="submit-btn">Upload to Gallery →</button>
+
+            <!-- Event Create -->
+            <h4 style="margin-top:1.25rem;">Create Event</h4>
+            <div class="form-row">
+              <label class="form-label">Event Title</label>
+              <input class="form-input" placeholder="e.g. Alumni Dinner 2026" type="text">
+            </div>
+            <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+              <div>
+                <label class="form-label">Date</label>
+                <input class="form-input" type="date">
+              </div>
+              <div>
+                <label class="form-label">Location</label>
+                <input class="form-input" placeholder="Venue" type="text">
+              </div>
+            </div>
+            <button class="submit-btn">Create Event →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE 9: FINANCIAL ADMIN ═══════════════════ -->
+<div class="page-label">— Financial Admin Dashboard —</div>
+<div class="page-wrap" style="margin-bottom:4rem;">
+  <div class="fin-page">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+
+    <!-- Dark nav with Finance badge -->
+    <div style="position:relative;z-index:3;margin-bottom:1rem;">
+      <div class="glass-nav dark">
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <div class="nav-logo">FGGC Alumni</div>
+          <span style="background:rgba(91,170,204,0.2);color:#5BAACC;font-size:0.48rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:8px;border:1px solid rgba(91,170,204,0.3);">FINANCE</span>
+        </div>
+        <div class="nav-links">
+          <span class="nav-link active-link" style="color:rgba(255,255,255,0.8)!important;">Payments</span>
+          <button class="nav-btn secondary-btn">Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fin-inner">
+      <div class="fin-header">
+        <h2>Payment Management</h2>
+        <p>Track and update monthly dues for all members — April 2026.</p>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="fin-stat-row">
+        <div class="fin-stat">
+          <div class="f-val">31</div>
+          <div class="f-lbl">Fully Paid</div>
+        </div>
+        <div class="fin-stat">
+          <div class="f-val" style="color:#e67e22;">10</div>
+          <div class="f-lbl">1–2 Months Behind</div>
+        </div>
+        <div class="fin-stat">
+          <div class="f-val" style="color:#c0392b;">6</div>
+          <div class="f-lbl">3+ Months Overdue</div>
+        </div>
+      </div>
+
+      <!-- Payment table -->
+      <div class="fin-table-wrap">
+        <table class="fin-table">
+          <thead>
+            <tr>
+              <th>#</th><th>Name</th><th>Year</th><th>Monthly Dues (Jan–Apr)</th><th>Status</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td style="font-weight:600;color:rgba(255,255,255,0.9);">Chidinma Obi</td>
+              <td>2016</td>
+              <td>
+                <div class="month-mini">
+                  <div class="mm-chip mm-paid" title="Jan">J</div>
+                  <div class="mm-chip mm-paid" title="Feb">F</div>
+                  <div class="mm-chip mm-paid" title="Mar">M</div>
+                  <div class="mm-chip mm-paid" title="Apr">A</div>
+                </div>
+              </td>
+              <td><span class="status-badge status-paid">Paid</span></td>
+              <td><button class="edit-btn">Edit</button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td style="font-weight:600;color:rgba(255,255,255,0.9);">Amara Eze</td>
+              <td>2018</td>
+              <td>
+                <div class="month-mini">
+                  <div class="mm-chip mm-paid" title="Jan">J</div>
+                  <div class="mm-chip mm-paid" title="Feb">F</div>
+                  <div class="mm-chip mm-unpaid" title="Mar">M</div>
+                  <div class="mm-chip mm-unpaid" title="Apr">A</div>
+                </div>
+              </td>
+              <td><span class="status-badge status-pending">Pending</span></td>
+              <td><button class="edit-btn">Edit</button></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td style="font-weight:600;color:rgba(255,255,255,0.9);">Ngozi Okeke</td>
+              <td>2012</td>
+              <td>
+                <div class="month-mini">
+                  <div class="mm-chip mm-unpaid" title="Jan">J</div>
+                  <div class="mm-chip mm-unpaid" title="Feb">F</div>
+                  <div class="mm-chip mm-unpaid" title="Mar">M</div>
+                  <div class="mm-chip mm-unpaid" title="Apr">A</div>
+                </div>
+              </td>
+              <td><span class="status-badge status-overdue">Overdue</span></td>
+              <td><button class="edit-btn">Edit</button></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td style="font-weight:600;color:rgba(255,255,255,0.9);">Blessing Nwachukwu</td>
+              <td>2020</td>
+              <td>
+                <div class="month-mini">
+                  <div class="mm-chip mm-paid" title="Jan">J</div>
+                  <div class="mm-chip mm-paid" title="Feb">F</div>
+                  <div class="mm-chip mm-paid" title="Mar">M</div>
+                  <div class="mm-chip mm-unpaid" title="Apr">A</div>
+                </div>
+              </td>
+              <td><span class="status-badge status-pending">Pending</span></td>
+              <td><button class="edit-btn">Edit</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Update payment note -->
+      <div style="margin-top:1rem;padding:0.65rem 0.85rem;background:rgba(91,170,204,0.1);border-radius:12px;border:1px solid rgba(91,170,204,0.2);font-size:0.55rem;color:rgba(255,255,255,0.6);">
+        💡 Click <strong style="color:#5BAACC;">Edit</strong> next to any member to open the payment editor and toggle which months have been paid.
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

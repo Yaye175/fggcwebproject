@@ -5,190 +5,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FGGC Gboko FCT Chapter Alumni | Home</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Welcome to the Federal Government Girls College Alumni Association Official Website for the FCT Chapter.">
+    <meta name="description"
+        content="Welcome to the Federal Government Girls College Alumni Association Official Website for the FCT Chapter.">
     <meta property="og:title" content="FGGC Gboko FCT Chapter Alumni | Home">
-    <meta property="og:description" content="Welcome to the Federal Government Girls College Alumni Association Official Website for the FCT Chapter.">
+    <meta property="og:description"
+        content="Welcome to the Federal Government Girls College Alumni Association Official Website for the FCT Chapter.">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        /* ── Bento grid layout ── */
-        .bento-grid {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            grid-template-rows: auto auto;
-            gap: 1.75rem;
-            margin-top: 2.5rem;
-        }
-
-        .bento-story    { grid-column: 1; grid-row: 1; }
-        .bento-events   { grid-column: 1; grid-row: 2; }
-        .bento-sidebar  { grid-column: 2; grid-row: 1 / span 2; }
-
-        @media (max-width: 960px) {
-            .bento-grid { grid-template-columns: 1fr; }
-            .bento-story, .bento-events, .bento-sidebar {
-                grid-column: 1;
-                grid-row: auto;
-            }
-        }
-
-        /* ── Story card ── */
-        .story-container {
-            background: var(--bg-pearl);
-            padding: 2.25rem;
-            border-radius: var(--r-md);
-            border-left: 4px solid var(--secondary-skyblue);
-            box-shadow: var(--shadow-card);
-        }
-
-        .story-img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            border-radius: var(--r-sm);
-            margin-bottom: 1.5rem;
-        }
-
-        /* ── Games sidebar ── */
-        .games-container {
-            background: var(--bg-pearl);
-            padding: 1.75rem;
-            border-radius: var(--r-md);
-            box-shadow: var(--shadow-card);
-            text-align: center;
-            position: sticky;
-            top: 6rem;      /* stays in view while scrolling */
-        }
-
-        .game-widget { margin-bottom: 2rem; }
-        .game-widget:last-child { margin-bottom: 0; }
-
-        /* ── Section labels ── */
-        .section-label {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1.25rem;
-        }
-        .section-label h2 { margin-bottom: 0; }
-        .section-label::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border-color);
-        }
-
-        /* ── Hero accent strip ── */
-        .hero-strip {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(91,170,204,0.14);
-            color: var(--secondary-skyblue);
-            font-size: 0.82rem;
-            font-weight: 600;
-            letter-spacing: 0.07em;
-            text-transform: uppercase;
-            padding: 0.35rem 1rem;
-            border-radius: var(--r-pill);
-            margin-bottom: 1.25rem;
-        }
-    </style>
 </head>
 
 <body>
-    <header>
-        <div class="logo" style="display: flex; align-items: center;">
-            <img src="images/logo.png" alt="FGGC Logo" style="height: 50px; margin-right: 15px; border-radius: 4px;">
-            <a href="index.html" style="color: inherit; text-decoration: none;">FGGC Gboko <br>FCT Chapter Alumni</a>
-        </div>
-        <nav>
-            <ul id="nav-links">
-                <li><a href="index.html" class="active">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="news.html">News & Archives</a></li>
-                <li><a href="gallery.html">Gallery</a></li>
+
+    <!-- ── Dark hero section ── -->
+    <div class="page-hero">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+
+        <!-- Floating glass pill nav (dark variant) -->
+        <nav class="nav-pill nav-pill--dark">
+            <a href="index.html" class="nav-logo">
+                <img src="images/logo.png" alt="FGGC Logo" class="nav-logo-img">
+                FGGC Gboko Alumni FCT
+            </a>
+            <ul class="nav-links-list">
+                <li><a href="index.html" class="nav-link active">Home</a></li>
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="news.html" class="nav-link">News</a></li>
+                <li><a href="gallery.html" class="nav-link">Gallery</a></li>
             </ul>
+            <div class="auth-buttons" id="auth-links"></div>
         </nav>
-        <div class="auth-buttons" id="auth-links">
-            <!-- Populated by JS -->
+
+        <!-- Centred frosted hero card -->
+        <div class="hero-card-wrap">
+            <div class="glass-card--dark hero-card">
+                <div class="hero-pill-badge">FGGC Gboko &middot; FCT Chapter</div>
+                <h1>Welcome Home,<br>Alumni!</h1>
+                <p>Connect with old friends, stay updated on events, play our weekly games, and support the next
+                    generation of leaders.</p>
+                <a href="signup.html" class="btn btn-primary">Join the Community &rarr;</a>
+            </div>
         </div>
-    </header>
+    </div>
 
-    <main>
-        <!-- ── Hero ── -->
-        <section class="hero">
-            <div class="hero-strip">FGGC Gboko &middot; FCT Chapter</div>
-            <h1>Welcome Home, Alumni!</h1>
-            <p>
-                Connect with old friends, stay updated on school events,<br>
-                play our weekly games, and support the next generation of leaders.
-            </p>
-            <a href="signup.html" class="btn btn-primary" style="font-size: 1.05rem; padding: 0.8rem 2.25rem;">Join the Community</a>
-        </section>
+    <!-- ── Below fold: warm cream ── -->
+    <div class="page-below">
+        <div class="blob blob-3"></div>
+        <div class="blob blob-4"></div>
 
-        <!-- ── Bento Grid ── -->
         <div class="bento-grid">
 
-            <!-- Story -->
+            <!-- Focus Story -->
             <section class="bento-story" id="latest-story">
                 <div class="section-label">
                     <h2>Focus Story</h2>
                 </div>
-                <div id="story-container" class="story-container">
-                    <p style="color: var(--text-muted);">Loading the latest story&hellip;</p>
+                <div class="glass-card" style="padding:1.5rem;" id="story-container">
+                    <p style="color:var(--text-muted);">Loading the latest story&hellip;</p>
                 </div>
             </section>
 
-            <!-- Events -->
+            <!-- Upcoming Events -->
             <section class="bento-events" id="upcoming-events">
                 <div class="section-label">
                     <h2>Upcoming Events</h2>
                 </div>
-                <div id="events-container" class="dashboard-grid">
-                    <p style="color: var(--text-muted);">Loading events&hellip;</p>
+                <div id="events-container">
+                    <p style="color:var(--text-muted);">Loading events&hellip;</p>
                 </div>
             </section>
 
-            <!-- Sidebar: weekly challenges -->
+            <!-- Sidebar: Weekly Challenges -->
             <aside class="bento-sidebar">
-                <div class="games-container">
-                    <div class="section-label">
-                        <h2 style="font-size: 1.35rem;">Weekly Challenges</h2>
+                <div class="section-label">
+                    <h2 style="font-size:1.1rem;">Weekly Challenges</h2>
+                </div>
+                <div class="game-widget">
+                    <h3 style="margin-bottom:0.85rem;">Sudoku</h3>
+                    <div style="border:1.5px solid var(--border-color);border-radius:var(--r-sm);padding:1.5rem;background:rgba(255,255,255,0.45);display:flex;flex-direction:column;align-items:center;gap:1rem;text-align:center;">
+                        <p style="color:var(--text-muted);font-size:0.85rem;line-height:1.55;">Load the Sudoku widget to play right here. (Delayed to stop the page from automatically scrolling down!)</p>
+                        <button onclick="
+                            const p = this.parentElement;
+                            p.style.padding = '0';
+                            p.style.border = 'none';
+                            p.style.background = 'none';
+                            p.innerHTML = '<iframe src=\'https://show.websudoku.com/?level=1\' width=\'100%\' height=\'380\' frameborder=\'0\' style=\'border-radius:var(--r-sm);border:1.5px solid var(--border-color);overflow:hidden;display:block;\'></iframe>';
+                        " class="btn btn-navy">Load Sudoku</button>
                     </div>
-
-                    <div class="game-widget">
-                        <h3 style="margin-bottom: 1rem;">Sudoku</h3>
-                        <iframe src="https://show.websudoku.com/?level=1" width="100%" height="400" frameborder="0"
-                            style="border-radius: var(--r-sm); border: 1.5px solid var(--border-color); overflow: hidden; display: block;"></iframe>
-                    </div>
-
-                    <div class="game-widget">
-                        <h3 style="margin-bottom: 1rem;">Crossword</h3>
-                        <div style="border: 1.5px solid var(--border-color); border-radius: var(--r-sm); padding: 2rem 1.5rem; background: var(--bg-cream); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1.25rem; min-height: 180px;">
-                            <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.55;">Due to security updates by game providers, direct embedding is disabled. Play the daily crossword in a new tab.</p>
-                            <a href="https://www.boatloadpuzzles.com/playcrossword" target="_blank" class="btn btn-primary">Play Daily Crossword &rarr;</a>
-                        </div>
+                </div>
+                <div class="game-widget">
+                    <h3 style="margin-bottom:0.85rem;">Crossword</h3>
+                    <div
+                        style="border:1.5px solid var(--border-color);border-radius:var(--r-sm);padding:1.5rem;background:rgba(255,255,255,0.45);display:flex;flex-direction:column;align-items:center;gap:1rem;text-align:center;">
+                        <p style="color:var(--text-muted);font-size:0.85rem;line-height:1.55;">Direct embedding is
+                            disabled by the provider. Play the daily crossword in a new tab.</p>
+                        <a href="https://www.boatloadpuzzles.com/playcrossword" target="_blank"
+                            class="btn btn-navy">Play Daily Crossword &rarr;</a>
                     </div>
                 </div>
             </aside>
         </div>
-    </main>
-<!--
-    <footer>
-        <div style="text-align: center; margin-bottom: 1rem;">
-            <a href="#" style="margin: 0 10px; color: var(--text-light);">Facebook</a>
-            <a href="#" style="margin: 0 10px; color: var(--text-light);">Twitter</a>
-            <a href="#" style="margin: 0 10px; color: var(--text-light);">Instagram</a>
-        </div>
-        <p>&copy; <span id="year"></span> FGGC Alumni Association. All rights reserved.</p>
-    </footer>
--->
+    </div>
 
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
@@ -202,11 +125,11 @@
                     storyContainer.innerHTML = '<p>No focus story available at the moment. Please check back later.</p>';
                 } else {
                     storyContainer.innerHTML = `
-                        ${story.imageData ? `<img src="${story.imageData}" alt="Story Image" class="story-img">` : ''}
-                        <h3 style="margin-bottom: 0.6rem;">${story.title}</h3>
-                        <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem; letter-spacing: 0.02em;">Published ${new Date(story.created_at).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'})}</div>
-                        <p style="white-space: pre-line; line-height: 1.75;">${story.content}</p>
-                    `;
+                    ${story.imageData ? `<img src="${story.imageData}" alt="Story Image" class="story-img">` : ''}
+                    <h3 style="margin-bottom:0.5rem;">${story.title}</h3>
+                    <div style="color:var(--text-muted);font-size:0.82rem;margin-bottom:1rem;">Published ${new Date(story.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                    <p style="white-space:pre-line;line-height:1.75;">${story.content}</p>
+                `;
                 }
             } catch (err) {
                 console.error(err);
@@ -221,15 +144,12 @@
                     eventsContainer.innerHTML = '<p>No upcoming events at this time.</p>';
                 } else {
                     eventsContainer.innerHTML = events.map(event => `
-                        <div class="card" style="border-top: 3px solid var(--secondary-skyblue);">
-                            <h3 class="card-title">${event.title}</h3>
-                            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
-                                <strong>Date:</strong> ${new Date(event.event_date).toLocaleDateString()} &nbsp;&bull;&nbsp;
-                                <strong>Location:</strong> ${event.location || 'TBA'}
-                            </p>
-                            <p style="color: var(--text-dark);">${event.description}</p>
-                        </div>
-                    `).join('');
+                    <div class="glass-card event-card">
+                        <div class="event-date-label">${new Date(event.event_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} &bull; ${event.location || 'TBA'}</div>
+                        <h3 style="font-size:1rem;margin-bottom:0.35rem;">${event.title}</h3>
+                        <p style="color:var(--text-mid);font-size:0.85rem;">${event.description}</p>
+                    </div>
+                `).join('');
                 }
             } catch (error) {
                 console.error(error);
@@ -237,5 +157,7 @@
             }
         });
     </script>
+    <script src="js/animations.js"></script>
 </body>
+
 </html>

@@ -46,10 +46,15 @@ router.put('/payments/:userId/toggle', async (req, res) => {
             [userId, currentYear]
         );
 
-        // Calculate expected status from the payload
-        // If months_paid is provided and not empty, it's paid. Otherwise unpaid.
-        let newStatus = months_paid ? 'paid' : 'unpaid';
-        let displayStatus = months_paid ? 'Paid' : 'Pending'; // For the users table (capitalized)
+        // Compute status using the same 3-month rule as the frontend
+        const MONTH_ABBREVS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const currentMonthIndex = new Date().getMonth();
+        const expectedMonths = MONTH_ABBREVS.slice(0, currentMonthIndex + 1);
+        const paidList = (months_paid || '').split(',').map(s => s.trim()).filter(Boolean);
+        const unpaidCount = expectedMonths.filter(m => !paidList.includes(m)).length;
+
+        let displayStatus = unpaidCount === 0 ? 'Paid' : unpaidCount >= 3 ? 'Overdue' : 'Pending';
+        let newStatus = displayStatus.toLowerCase(); // payments table uses lowercase
         let newMonthsPaid = months_paid || '';
 
         if (payments.length > 0) {

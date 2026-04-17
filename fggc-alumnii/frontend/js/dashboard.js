@@ -25,18 +25,42 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             yearEl.textContent = data.year;
             
+            const statusText = data.monthly_status || 'Pending';
+            const userPaidMonths = (data.months_paid || '').split(',').map(m => m.trim()).filter(Boolean);
+
             if (monthlyStatusEl) {
-                 monthlyStatusEl.textContent = data.monthly_status || 'Pending';
-                 // Optionally add some styling based on status
-                 if (data.monthly_status === 'Paid') {
-                     monthlyStatusEl.style.color = 'var(--accent-green, green)';
-                 } else if (data.monthly_status === 'Overdue') {
-                     monthlyStatusEl.style.color = 'var(--danger-red, red)';
+                 monthlyStatusEl.textContent = statusText === 'Paid' ? 'Up to Date' : statusText;
+
+                 if (statusText === 'Paid') {
+                     monthlyStatusEl.style.color = 'var(--accent-green, #2E8B57)';
+                 } else if (statusText === 'Overdue') {
+                     monthlyStatusEl.style.color = 'var(--danger-red, #D9534F)';
+                 } else {
+                     monthlyStatusEl.style.color = 'var(--navy, #0D2B4E)';
+                 }
+
+                 // Append "Paid For: ..." if not fully paid but has some payments
+                 if (statusText !== 'Paid') {
+                     const subtext = document.createElement('div');
+                     subtext.style.fontSize = '0.8rem';
+                     subtext.style.fontFamily = "'Inter', sans-serif";
+                     subtext.style.fontWeight = '500';
+                     subtext.style.color = 'var(--text-mid, #7A7A8C)';
+                     subtext.style.marginTop = '0.25rem';
+                     
+                     if (userPaidMonths.length > 0) {
+                         subtext.textContent = `(Paid For: ${userPaidMonths.join(', ')})`;
+                     } else {
+                         subtext.textContent = `(No months paid yet)`;
+                     }
+                     monthlyStatusEl.appendChild(subtext);
                  }
             }
 
-            if (data.status === 'paid') {
-                paymentStatusEl.innerHTML = `<span class="badge badge-paid">PAID</span>`;
+            if (statusText === 'Paid') {
+                paymentStatusEl.innerHTML = `<span class="badge badge-paid">FULLY PAID</span>`;
+            } else if (userPaidMonths.length > 0) {
+                paymentStatusEl.innerHTML = `<span class="badge" style="background: rgba(243, 156, 18, 0.15); color: #E67E22; border: 1px solid rgba(243, 156, 18, 0.3);">PARTIALLY PAID</span>`;
             } else {
                 paymentStatusEl.innerHTML = `<span class="badge badge-unpaid">UNPAID</span>`;
             }
@@ -45,7 +69,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const gridContainer = document.getElementById('monthly-grid');
             if (gridContainer) {
                 const allMonths = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                const userPaidMonths = (data.months_paid || '').split(',').map(m => m.trim());
 
                 gridContainer.innerHTML = ''; // Clear loading text
                 allMonths.forEach(m => {

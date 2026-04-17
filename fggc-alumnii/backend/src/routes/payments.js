@@ -9,30 +9,43 @@ router.get('/me', authMiddleware, async (req, res) => {
     try {
         const currentYear = new Date().getFullYear();
 
-        // Fetch monthly status from users table
-        const [userRows] = await pool.execute(
-            'SELECT payment_status FROM users WHERE id = ?',
-            [req.user.id]
-        );
-        const monthlyStatus = userRows.length > 0 ? (userRows[0].payment_status || 'Pending') : 'Pending';
-
         // Fetch user's payments for this year
         const [payments] = await pool.execute(
             'SELECT * FROM payments WHERE user_id = ? AND year = ?',
             [req.user.id, currentYear]
         );
 
-        if (payments.length === 0) {
-            // No payment record yet - default to unpaid
-            return res.json({ status: 'unpaid', year: currentYear, months_paid: '', monthly_status: monthlyStatus });
+        let months_paid = '';
+        let status = 'unpaid';
+        let amount = 0;
+
+        if (payments.length > 0) {
+            months_paid = payments[0].months_paid || '';
+            status = payments[0].status;
+            amount = payments[0].amount;
+        }
+
+        // Dynamically compute the monthly status based on months paid vs current calendar month
+        const MONTH_ABBREVS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const currentMonthIndex = new Date().getMonth();
+        const expectedMonths = MONTH_ABBREVS.slice(0, currentMonthIndex + 1);
+        
+        const paidMonthsArr = months_paid.split(',').map(s => s.trim()).filter(Boolean);
+        const unpaidCount = expectedMonths.filter(m => !paidMonthsArr.includes(m)).length;
+        
+        let monthly_status = 'Paid';
+        if (unpaidCount >= 3) {
+            monthly_status = 'Overdue';
+        } else if (unpaidCount > 0) {
+            monthly_status = 'Pending';
         }
 
         res.json({ 
-            status: payments[0].status, 
+            status, 
             year: currentYear, 
-            amount: payments[0].amount,
-            months_paid: payments[0].months_paid || '',
-            monthly_status: monthlyStatus
+            amount,
+            months_paid,
+            monthly_status
         });
     } catch (error) {
         console.error(error);

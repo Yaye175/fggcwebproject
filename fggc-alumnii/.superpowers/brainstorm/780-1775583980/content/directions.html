@@ -1,0 +1,97 @@
+<h2>Which design direction feels right?</h2>
+<p class="subtitle">Same palette & fonts — three very different personalities. Click to select.</p>
+
+<div class="cards">
+
+  <!-- Direction A: Editorial -->
+  <div class="card" data-choice="editorial" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0D2B4E; padding: 1.25rem; font-family: Georgia, serif; min-height: 220px; position:relative; overflow:hidden;">
+      <!-- Nav -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <span style="color:#5BAACC; font-weight:700; font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase;">FGGC Alumni</span>
+        <div style="display:flex; gap:0.75rem;">
+          <span style="color:rgba(255,255,255,0.6); font-size:0.6rem;">Home</span>
+          <span style="color:rgba(255,255,255,0.6); font-size:0.6rem;">About</span>
+          <span style="color:rgba(255,255,255,0.6); font-size:0.6rem;">News</span>
+        </div>
+      </div>
+      <!-- Big editorial headline -->
+      <div style="border-top: 2px solid #5BAACC; padding-top:1rem; margin-bottom:0.75rem;">
+        <div style="color:rgba(255,255,255,0.4); font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.35rem;">FCT Chapter</div>
+        <div style="color:#FEFCF8; font-size:1.6rem; line-height:1.1; font-family:Georgia,serif; font-weight:700;">Welcome<br>Home,<br>Alumni.</div>
+      </div>
+      <div style="position:absolute; bottom:1.25rem; right:1.25rem; background:#5BAACC; color:#0D2B4E; font-size:0.55rem; font-weight:700; padding:0.35rem 0.75rem; border-radius:20px;">Join Community →</div>
+      <!-- Decorative horizontal rule grid -->
+      <div style="position:absolute; bottom:0; left:0; right:0; height:3px; background: linear-gradient(90deg, #5BAACC 0%, transparent 100%);"></div>
+    </div>
+    <div class="card-body">
+      <h3>A — Editorial</h3>
+      <p>Bold oversized type, strong horizontal rules, full-bleed navy hero. Feels like a prestige alumni magazine. Authoritative and proud.</p>
+    </div>
+  </div>
+
+  <!-- Direction B: Warm Glass -->
+  <div class="card" data-choice="warmglass" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: linear-gradient(135deg, #F7F3ED 0%, #E8DDD0 50%, #ddd3c4 100%); padding: 1.25rem; min-height: 220px; position:relative; overflow:hidden;">
+      <!-- Floating glass nav -->
+      <div style="background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border-radius:12px; padding:0.5rem 0.85rem; display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; box-shadow:0 2px 12px rgba(13,43,78,0.08);">
+        <span style="color:#0D2B4E; font-weight:700; font-size:0.65rem; font-family:Georgia,serif;">FGGC Alumni</span>
+        <div style="display:flex; gap:0.6rem;">
+          <span style="color:#3D3D3D; font-size:0.55rem;">Home</span>
+          <span style="color:#3D3D3D; font-size:0.55rem;">News</span>
+          <span style="background:#0D2B4E; color:#5BAACC; font-size:0.5rem; padding:0.2rem 0.5rem; border-radius:8px;">Login</span>
+        </div>
+      </div>
+      <!-- Glass hero card -->
+      <div style="background:rgba(255,255,255,0.55); backdrop-filter:blur(12px); border-radius:16px; padding:1rem; box-shadow:0 8px 32px rgba(13,43,78,0.1); border:1px solid rgba(255,255,255,0.8);">
+        <div style="color:#5BAACC; font-size:0.55rem; font-weight:700; letter-spacing:0.08em; margin-bottom:0.4rem;">FCT CHAPTER</div>
+        <div style="color:#0D2B4E; font-size:1.1rem; font-family:Georgia,serif; font-weight:700; line-height:1.2; margin-bottom:0.5rem;">Welcome Home,<br>Alumni!</div>
+        <div style="color:#7A7A8C; font-size:0.55rem; margin-bottom:0.65rem;">Connect, celebrate, and support the next generation.</div>
+        <div style="background:#0D2B4E; color:#5BAACC; font-size:0.5rem; font-weight:700; padding:0.3rem 0.7rem; border-radius:10px; display:inline-block;">Join the Community</div>
+      </div>
+      <!-- Decorative blobs -->
+      <div style="position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:rgba(91,170,204,0.2); border-radius:50%;"></div>
+      <div style="position:absolute; bottom:-10px; left:10px; width:50px; height:50px; background:rgba(13,43,78,0.08); border-radius:50%;"></div>
+    </div>
+    <div class="card-body">
+      <h3>B — Warm Glass</h3>
+      <p>Frosted glass cards floating over warm cream gradients. Soft, modern, and inviting. Feels premium without being cold.</p>
+    </div>
+  </div>
+
+  <!-- Direction C: Asymmetric Bold -->
+  <div class="card" data-choice="asymmetric" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F7F3ED; padding:0; min-height:220px; position:relative; overflow:hidden;">
+      <!-- Diagonal navy split -->
+      <div style="position:absolute; top:0; left:0; width:55%; height:100%; background:#0D2B4E; clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%);"></div>
+      <!-- Left content -->
+      <div style="position:relative; z-index:2; padding:1.25rem; display:grid; grid-template-columns:1fr 1fr; height:100%;">
+        <div style="padding-right:0.5rem;">
+          <div style="color:#5BAACC; font-size:0.5rem; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.4rem;">Since 1985</div>
+          <div style="color:#FEFCF8; font-size:1.1rem; font-family:Georgia,serif; font-weight:700; line-height:1.15; margin-bottom:0.65rem;">Welcome<br>Home.</div>
+          <div style="background:#5BAACC; color:#0D2B4E; font-size:0.5rem; font-weight:700; padding:0.3rem 0.6rem; border-radius:12px; display:inline-block;">Join Us</div>
+        </div>
+        <!-- Right floating cards -->
+        <div style="display:flex; flex-direction:column; gap:0.4rem; padding-top:0.25rem;">
+          <div style="background:white; border-radius:10px; padding:0.5rem 0.65rem; box-shadow:0 4px 16px rgba(13,43,78,0.12);">
+            <div style="color:#0D2B4E; font-size:0.5rem; font-weight:700;">Latest News</div>
+            <div style="color:#7A7A8C; font-size:0.45rem;">Reunion 2025 announced</div>
+          </div>
+          <div style="background:white; border-radius:10px; padding:0.5rem 0.65rem; box-shadow:0 4px 16px rgba(13,43,78,0.12);">
+            <div style="color:#0D2B4E; font-size:0.5rem; font-weight:700;">Events</div>
+            <div style="color:#7A7A8C; font-size:0.45rem;">Annual dinner — Dec 2025</div>
+          </div>
+          <div style="background:#5BAACC; border-radius:10px; padding:0.5rem 0.65rem;">
+            <div style="color:#0D2B4E; font-size:0.5rem; font-weight:700;">Gallery</div>
+            <div style="color:#0D2B4E; font-size:0.45rem;">View memories →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Asymmetric Bold</h3>
+      <p>Diagonal split hero, floating content cards on the right, strong geometric energy. Dynamic and contemporary — stands out from every other alumni site.</p>
+    </div>
+  </div>
+
+</div>

@@ -57,17 +57,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const MONTH_ABBREVS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
     /**
-     * Returns the time-aware effective status.
-     * If the user hasn't paid for the CURRENT calendar month, they are never "Paid",
-     * regardless of what the backend payment_status field says.
+     * Computes status purely from months_paid vs the current calendar date.
+     *
+     * Rules:
+     *   - Expected months = Jan → current month (inclusive)
+     *   - 0 unpaid           → Paid
+     *   - 1–2 unpaid         → Pending
+     *   - 3+ unpaid          → Overdue
      */
     function getEffectiveStatus(user) {
-        const currentMonth = MONTH_ABBREVS[new Date().getMonth()];
+        const currentMonthIndex = new Date().getMonth(); // 0 = Jan
+        const expectedMonths = MONTH_ABBREVS.slice(0, currentMonthIndex + 1);
         const paidMonths = (user.months_paid || '').split(',').map(s => s.trim()).filter(Boolean);
-        if (paidMonths.includes(currentMonth)) return 'Paid';
-        // Current month is unpaid — never show "Paid"; keep Overdue if backend set it, else Pending
-        const backendStatus = user.payment_status || 'Pending';
-        return backendStatus === 'Paid' ? 'Pending' : backendStatus;
+        const unpaidCount = expectedMonths.filter(m => !paidMonths.includes(m)).length;
+
+        if (unpaidCount === 0)  return 'Paid';
+        if (unpaidCount >= 3)   return 'Overdue';
+        return 'Pending';
     }
 
     function renderTable(users) {

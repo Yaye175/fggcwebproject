@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const cookieParser = require('cookie-parser');
 
 // Required Route Files
 const authRoutes = require('./routes/auth');
@@ -22,14 +21,12 @@ app.use(helmet({
     contentSecurityPolicy: false
 }));
 app.use(cors({
-    origin: true, // Echo origin back to allow credentials from any dev port dynamically
-    credentials: true, // Required for HttpOnly cookies
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Bypass-Tunnel-Reminder', 'ngrok-skip-browser-warning']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 const path = require('path');
 // Serve the frontend static files

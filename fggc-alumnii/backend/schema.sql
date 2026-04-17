@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS users (
     is_pro_admin BOOLEAN DEFAULT FALSE,
     payment_status ENUM('Paid', 'Pending', 'Overdue') DEFAULT 'Pending',
     last_payment_date DATETIME,
+    reset_token VARCHAR(255) NULL,
+    reset_token_expiry DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

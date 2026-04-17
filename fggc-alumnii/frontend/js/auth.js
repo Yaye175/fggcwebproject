@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const data = await api.post('/auth/login', { email, password });
+                localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
 
                 // Redirect based on role
@@ -87,16 +88,87 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Attach to Forgot Password Form
+    const forgotForm = document.getElementById('forgot-password-form');
+    if (forgotForm) {
+        forgotForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value;
+            const errorDiv = document.getElementById('forgot-error');
+            const successDiv = document.getElementById('forgot-success');
+            const btn = document.getElementById('forgot-btn');
+            
+            errorDiv.textContent = '';
+            successDiv.style.display = 'none';
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+
+            try {
+                const res = await api.post('/auth/forgot-password', { email });
+                successDiv.textContent = res.message;
+                successDiv.style.display = 'block';
+                forgotForm.reset();
+            } catch (err) {
+                errorDiv.textContent = err.message;
+            } finally {
+                btn.textContent = 'Send Reset Link \u2192';
+                btn.disabled = false;
+            }
+        });
+    }
+
+    // Attach to Reset Password Form
+    const resetForm = document.getElementById('reset-password-form');
+    if (resetForm) {
+        // Auto-fill email display if we want, or just keep it invisible via URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        const email = urlParams.get('email');
+        
+        if (!token || !email) {
+            document.getElementById('reset-error').textContent = 'Invalid reset link. Missing token or email.';
+            document.getElementById('reset-btn').disabled = true;
+        }
+
+        resetForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPassword = document.getElementById('reset-password').value;
+            const confirmPassword = document.getElementById('reset-confirm').value;
+            const errorDiv = document.getElementById('reset-error');
+            const successDiv = document.getElementById('reset-success');
+            const btn = document.getElementById('reset-btn');
+
+            errorDiv.textContent = '';
+            
+            if (newPassword !== confirmPassword) {
+                errorDiv.textContent = 'Passwords do not match.';
+                return;
+            }
+
+            btn.textContent = 'Updating...';
+            btn.disabled = true;
+
+            try {
+                const res = await api.post('/auth/reset-password', { email, token, newPassword });
+                successDiv.textContent = res.message;
+                successDiv.style.display = 'block';
+                resetForm.reset();
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 3000);
+            } catch (err) {
+                errorDiv.textContent = err.message;
+                btn.textContent = 'Update Password';
+                btn.disabled = false;
+            }
+        });
+    }
 });
 
 // Global Logout
-window.logout = async () => {
-    try {
-        await api.post('/auth/logout');
-    } catch (e) {
-        console.error('Logout error:', e);
-    }
-    localStorage.removeItem('token'); // Clear any stale tokens
+window.logout = () => {
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = 'index.html';
 };

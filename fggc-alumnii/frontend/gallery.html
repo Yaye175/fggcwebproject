@@ -5,100 +5,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gallery | FGGC Gboko FCT Chapter Alumni</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="A collection of the proudest moments and events from the FGGC Gboko FCT Chapter Alumni Association.">
-    <meta property="og:title" content="Gallery | FGGC Gboko FCT Chapter Alumni">
-    <meta property="og:description" content="View our shared memories, events, and alumni pictures in the official gallery.">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
+    <meta name="description"
+        content="A collection of the proudest moments and events from the FGGC Gboko FCT Chapter Alumni Association.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        .gallery-item { cursor: pointer; }
-
-        /* Lightbox overlay */
-        #lightbox {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(13, 43, 78, 0.88);
-            backdrop-filter: blur(6px);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            padding: 1.5rem;
-        }
-        #lightbox.open { display: flex; }
-
-        #lightbox-img {
-            max-width: 90vw;
-            max-height: 85vh;
-            border-radius: 12px;
-            box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-            object-fit: contain;
-        }
-
-        #lightbox-caption {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255,255,255,0.9);
-            font-size: 0.95rem;
-            background: rgba(0,0,0,0.45);
-            padding: 0.4rem 1.2rem;
-            border-radius: 50px;
-            white-space: nowrap;
-        }
-
-        #lightbox-close {
-            position: fixed;
-            top: 1.25rem;
-            right: 1.5rem;
-            background: rgba(255,255,255,0.15);
-            border: none;
-            color: white;
-            font-size: 1.6rem;
-            line-height: 1;
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-        #lightbox-close:hover { background: rgba(255,255,255,0.3); }
-    </style>
 </head>
 
 <body>
-    <header>
-        <div class="logo" style="display: flex; align-items: center;">
-            <img src="images/logo.png" alt="FGGC Logo" style="height: 50px; margin-right: 15px; border-radius: 4px;">
-            <a href="index.html" style="color: inherit; text-decoration: none;">FGGC Gboko FCT Chapter Alumni</a>
-        </div>
-        <nav>
-            <ul id="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="news.html">News & Archives</a></li>
-                <li><a href="gallery.html" class="active">Gallery</a></li>
-            </ul>
-        </nav>
+
+    <nav class="nav-pill nav-pill--light">
+        <a href="index.html" class="nav-logo">
+            <img src="images/logo.png" alt="FGGC Logo" class="nav-logo-img">
+            FGGC Gboko Alumni FCT
+        </a>
+        <ul class="nav-links-list">
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="about.html" class="nav-link">About</a></li>
+            <li><a href="news.html" class="nav-link">News</a></li>
+            <li><a href="gallery.html" class="nav-link active">Gallery</a></li>
+        </ul>
         <div class="auth-buttons" id="auth-links"></div>
-    </header>
+    </nav>
 
     <main>
-        <h1>Memories & Events Gallery</h1>
-        <p style="margin-bottom: 2rem;">A collection of our proudest moments and events.</p>
+        <div class="page-heading">
+            <h1>Memories &amp; Events</h1>
+            <p>A collection of our proudest moments. Click any image to view full size.</p>
+        </div>
 
+        <!-- #gallery-container preserved — JS injects .gallery-item divs here -->
         <div id="gallery-container" class="gallery-grid">
-            <p>Loading gallery...</p>
+            <p>Loading gallery&hellip;</p>
         </div>
     </main>
 
-    <!-- Lightbox -->
+    <!-- Lightbox — all IDs preserved exactly -->
     <div id="lightbox">
         <button id="lightbox-close">&times;</button>
         <img id="lightbox-img" src="" alt="">
@@ -107,8 +52,8 @@
 
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/animations.js"></script>
     <script>
-        // Lightbox logic
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightbox-img');
         const lightboxCaption = document.getElementById('lightbox-caption');
@@ -131,33 +76,28 @@
         lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
 
-        // Gallery load
         document.addEventListener('DOMContentLoaded', async () => {
             const container = document.getElementById('gallery-container');
             try {
                 const images = await api.get('/gallery');
-
                 if (images.length === 0) {
                     container.innerHTML = '<p>No images available in the gallery yet.</p>';
                     return;
                 }
-
                 container.innerHTML = images.map((img, i) => `
-                    <div class="gallery-item" data-index="${i}">
-                        ${img.dataUrl
-                            ? `<img src="${img.dataUrl}" alt="${img.caption || 'Alumni Event'}">`
-                            : `<div style="height:210px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:0.85rem;">Image unavailable</div>`
-                        }
-                        ${img.caption ? `<div style="padding: 0.5rem; text-align: center; background: white;">${img.caption}</div>` : ''}
-                    </div>
-                `).join('');
+                <div class="gallery-item" data-index="${i}">
+                    ${img.dataUrl
+                        ? `<img src="${img.dataUrl}" alt="${img.caption || 'Alumni Event'}">`
+                        : `<div style="height:180px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:0.85rem;">Image unavailable</div>`
+                    }
+                    ${img.caption ? `<div class="gal-caption">${img.caption}</div>` : ''}
+                </div>
+            `).join('');
 
-                // Attach click handlers using stored image data
                 container.querySelectorAll('.gallery-item[data-index]').forEach((el, i) => {
                     if (!images[i].dataUrl) return;
                     el.addEventListener('click', () => openLightbox(images[i].dataUrl, images[i].caption || ''));
                 });
-
             } catch (error) {
                 container.innerHTML = '<p>Failed to load gallery images.</p>';
             }

@@ -1,0 +1,108 @@
+<h2>How should the homepage hero feel?</h2>
+<p class="subtitle">First thing every visitor sees. Sets the emotional tone.</p>
+
+<div class="cards">
+
+  <!-- Hero A: Centered Soft -->
+  <div class="card" data-choice="centered" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: linear-gradient(145deg, #F7F3ED 0%, #EDE5D8 60%, #E0D4C3 100%); padding: 1.25rem; min-height:240px; position:relative; overflow:hidden; display:flex; flex-direction:column;">
+      <!-- Floating pill nav -->
+      <div style="background:rgba(255,255,255,0.72);backdrop-filter:blur(12px);border-radius:40px;padding:0.4rem 0.9rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 3px 16px rgba(13,43,78,0.09);border:1px solid rgba(255,255,255,0.9);margin-bottom:1.5rem;">
+        <span style="color:#0D2B4E;font-weight:700;font-size:0.55rem;font-family:Georgia,serif;">FGGC Alumni</span>
+        <div style="display:flex;gap:0.7rem;align-items:center;">
+          <span style="color:#7A7A8C;font-size:0.5rem;">Home</span><span style="color:#7A7A8C;font-size:0.5rem;">News</span><span style="color:#7A7A8C;font-size:0.5rem;">Gallery</span>
+          <div style="background:#0D2B4E;color:#5BAACC;font-size:0.45rem;font-weight:700;padding:0.25rem 0.55rem;border-radius:14px;">Login</div>
+        </div>
+      </div>
+      <!-- Centered hero content -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+        <div style="background:rgba(91,170,204,0.15);color:#5BAACC;font-size:0.45rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.25rem 0.8rem;border-radius:20px;margin-bottom:0.65rem;">FGGC Gboko · FCT Chapter</div>
+        <div style="color:#0D2B4E;font-family:Georgia,serif;font-size:1.5rem;font-weight:700;line-height:1.15;margin-bottom:0.6rem;">Welcome Home,<br>Alumni!</div>
+        <div style="color:#7A7A8C;font-size:0.55rem;max-width:180px;margin-bottom:0.85rem;line-height:1.5;">Connect with old friends, stay updated, and support the next generation of leaders.</div>
+        <div style="background:#0D2B4E;color:#5BAACC;font-size:0.5rem;font-weight:700;padding:0.4rem 1rem;border-radius:20px;">Join the Community →</div>
+      </div>
+      <!-- Soft blobs -->
+      <div style="position:absolute;top:-20px;right:-20px;width:90px;height:90px;background:rgba(91,170,204,0.18);border-radius:50%;filter:blur(8px);"></div>
+      <div style="position:absolute;bottom:-30px;left:-15px;width:110px;height:110px;background:rgba(13,43,78,0.07);border-radius:50%;filter:blur(10px);"></div>
+    </div>
+    <div class="card-body">
+      <h3>A — Centered Soft</h3>
+      <p>Everything centered, generous whitespace, soft ambient blobs. Calm, welcoming, premium. The glass card effect wraps the whole hero area.</p>
+    </div>
+  </div>
+
+  <!-- Hero B: Split Left/Right -->
+  <div class="card" data-choice="split" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: linear-gradient(145deg, #F7F3ED 0%, #EDE5D8 100%); padding: 1.25rem; min-height:240px; position:relative; overflow:hidden; display:flex; flex-direction:column;">
+      <!-- Floating pill nav -->
+      <div style="background:rgba(255,255,255,0.72);backdrop-filter:blur(12px);border-radius:40px;padding:0.4rem 0.9rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 3px 16px rgba(13,43,78,0.09);border:1px solid rgba(255,255,255,0.9);margin-bottom:1.25rem;">
+        <span style="color:#0D2B4E;font-weight:700;font-size:0.55rem;font-family:Georgia,serif;">FGGC Alumni</span>
+        <div style="display:flex;gap:0.7rem;align-items:center;">
+          <span style="color:#7A7A8C;font-size:0.5rem;">Home</span><span style="color:#7A7A8C;font-size:0.5rem;">News</span>
+          <div style="background:#0D2B4E;color:#5BAACC;font-size:0.45rem;font-weight:700;padding:0.25rem 0.55rem;border-radius:14px;">Login</div>
+        </div>
+      </div>
+      <!-- Split hero -->
+      <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;align-items:center;">
+        <!-- Left: text -->
+        <div>
+          <div style="color:#5BAACC;font-size:0.45rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;">FCT Chapter</div>
+          <div style="color:#0D2B4E;font-family:Georgia,serif;font-size:1.15rem;font-weight:700;line-height:1.2;margin-bottom:0.5rem;">Welcome<br>Home,<br>Alumni!</div>
+          <div style="color:#7A7A8C;font-size:0.5rem;margin-bottom:0.6rem;line-height:1.5;">Connect, celebrate, and give back.</div>
+          <div style="background:#0D2B4E;color:#5BAACC;font-size:0.45rem;font-weight:700;padding:0.35rem 0.75rem;border-radius:16px;display:inline-block;">Join Us →</div>
+        </div>
+        <!-- Right: floating stat cards -->
+        <div style="display:flex;flex-direction:column;gap:0.4rem;">
+          <div style="background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);border-radius:10px;padding:0.5rem 0.65rem;box-shadow:0 4px 16px rgba(13,43,78,0.08);border:1px solid rgba(255,255,255,0.9);">
+            <div style="color:#5BAACC;font-size:0.65rem;font-weight:700;font-family:Georgia,serif;">200+</div>
+            <div style="color:#7A7A8C;font-size:0.45rem;">Active Members</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);border-radius:10px;padding:0.5rem 0.65rem;box-shadow:0 4px 16px rgba(13,43,78,0.08);border:1px solid rgba(255,255,255,0.9);">
+            <div style="color:#5BAACC;font-size:0.65rem;font-weight:700;font-family:Georgia,serif;">1985</div>
+            <div style="color:#7A7A8C;font-size:0.45rem;">Year Founded</div>
+          </div>
+          <div style="background:#0D2B4E;border-radius:10px;padding:0.5rem 0.65rem;">
+            <div style="color:#5BAACC;font-size:0.65rem;font-weight:700;font-family:Georgia,serif;">FCT</div>
+            <div style="color:rgba(255,255,255,0.65);font-size:0.45rem;">Chapter HQ</div>
+          </div>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:-25px;right:-25px;width:100px;height:100px;background:rgba(91,170,204,0.15);border-radius:50%;filter:blur(12px);"></div>
+    </div>
+    <div class="card-body">
+      <h3>B — Split with Stats</h3>
+      <p>Left: headline and CTA. Right: floating glass stat cards (members, year, chapter). Tells the story and builds credibility immediately.</p>
+    </div>
+  </div>
+
+  <!-- Hero C: Full Glass Card -->
+  <div class="card" data-choice="fullglass" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: linear-gradient(145deg, #0D2B4E 0%, #1a3f6b 100%); padding: 1.25rem; min-height:240px; position:relative; overflow:hidden; display:flex; flex-direction:column;">
+      <!-- Floating pill nav on dark -->
+      <div style="background:rgba(255,255,255,0.12);backdrop-filter:blur(12px);border-radius:40px;padding:0.4rem 0.9rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 3px 16px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.2);margin-bottom:1.25rem;">
+        <span style="color:#5BAACC;font-weight:700;font-size:0.55rem;font-family:Georgia,serif;">FGGC Alumni</span>
+        <div style="display:flex;gap:0.7rem;align-items:center;">
+          <span style="color:rgba(255,255,255,0.65);font-size:0.5rem;">Home</span><span style="color:rgba(255,255,255,0.65);font-size:0.5rem;">News</span>
+          <div style="background:#5BAACC;color:#0D2B4E;font-size:0.45rem;font-weight:700;padding:0.25rem 0.55rem;border-radius:14px;">Login</div>
+        </div>
+      </div>
+      <!-- Big frosted card in the center -->
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+        <div style="background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);border-radius:20px;padding:1.1rem 1.25rem;border:1px solid rgba(255,255,255,0.2);box-shadow:0 16px 48px rgba(0,0,0,0.2);text-align:center;width:100%;">
+          <div style="color:rgba(91,170,204,0.9);font-size:0.45rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.4rem;">FGGC Gboko · FCT Chapter</div>
+          <div style="color:#FEFCF8;font-family:Georgia,serif;font-size:1.3rem;font-weight:700;line-height:1.2;margin-bottom:0.5rem;">Welcome Home,<br>Alumni!</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:0.5rem;margin-bottom:0.75rem;">Connect · Celebrate · Give Back</div>
+          <div style="background:#5BAACC;color:#0D2B4E;font-size:0.48rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:18px;display:inline-block;">Join the Community →</div>
+        </div>
+      </div>
+      <!-- Subtle light orbs -->
+      <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(91,170,204,0.12);border-radius:50%;filter:blur(20px);"></div>
+      <div style="position:absolute;bottom:-40px;left:-20px;width:140px;height:140px;background:rgba(91,170,204,0.08);border-radius:50%;filter:blur(25px);"></div>
+    </div>
+    <div class="card-body">
+      <h3>C — Dark Glass Immersive</h3>
+      <p>Full navy background with a glowing frosted card centerstage. Dramatic, immersive, confident. The glass effect really shines on dark — like looking through ice.</p>
+    </div>
+  </div>
+
+</div>

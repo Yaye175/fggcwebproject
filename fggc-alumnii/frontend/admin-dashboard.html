@@ -4,106 +4,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | FGGC Gboko FCT-Chapter Alumni</title>
+    <title>Admin Dashboard | FGGC Gboko FCT Chapter Alumni</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        .filter-container {
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .status-select {
-            padding: 5px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-
-        .save-btn {
-            background-color: #004d40;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-left: 8px;
-        }
-
-        .save-btn:hover {
-            background-color: #00332a;
-        }
-
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.85em;
-            font-weight: bold;
-        }
-
-        .status-paid {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .status-pending {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-
-        .status-overdue {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-    </style>
 </head>
 
 <body>
-    <header>
-        <div class="logo" style="display: flex; align-items: center;">
-            <img src="images/logo.png" alt="FGGC Logo" style="height: 50px; margin-right: 15px; border-radius: 4px;">
-            <a href="index.html" style="color: inherit; text-decoration: none;">FGGC Gboko <br>FCT-Chapter Alumni
-                Admin</a>
+
+    <!-- Light nav with PRO badge -->
+    <nav class="nav-pill nav-pill--light">
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+            <a href="index.html" class="nav-logo">
+                <img src="images/logo.png" alt="FGGC Logo" class="nav-logo-img">
+                FGGC Gboko Alumni FCT
+            </a>
+            <span class="nav-badge nav-badge--pro" id="nav-admin-title">ADMIN</span>
         </div>
-        <nav>
-            <ul id="nav-links">
-                <li><a href="dashboard.html">My Dashboard</a></li>
-                <li><a href="admin-dashboard.html" class="active" id="nav-admin-title">User Management</a></li>
-            </ul>
-        </nav>
+        <ul class="nav-links-list">
+            <li><a href="dashboard.html" class="nav-link">My Dashboard</a></li>
+            <li><a href="admin-dashboard.html" class="nav-link active">Admin</a></li>
+        </ul>
         <div class="auth-buttons" id="auth-links"></div>
-    </header>
+    </nav>
 
     <main>
+        <!-- Tab switcher -->
         <div
-            style="display: flex; gap: 10px; margin-bottom: 2rem; border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">
+            style="display:flex;gap:0.65rem;margin-bottom:2rem;border-bottom:1px solid var(--border-color);padding-bottom:1rem;">
             <button class="btn btn-primary" id="tab-users-btn">User Management</button>
             <button class="btn btn-secondary" id="tab-pro-btn">PRO Admin Tools</button>
         </div>
 
-        <!-- Users Tab -->
+        <!-- ═══ TAB: USER MANAGEMENT ═══ -->
         <section id="tab-users">
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem;">
+            <div
+                style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.75rem;">
                 <div>
-                    <h1>User Management</h1>
-                    <p>Manage registered users and their monthly payment status.</p>
+                    <h1 style="font-size:1.6rem;margin-bottom:0.2rem;">User Management</h1>
+                    <p style="color:var(--text-mid);">Manage registered members and their monthly payment status.</p>
                 </div>
             </div>
 
             <div class="filter-container">
-                <label for="status-filter">Filter by Status:</label>
+                <label for="status-filter" style="font-weight:600;font-size:0.88rem;">Filter by Status:</label>
                 <select id="status-filter" class="status-select">
                     <option value="All">All Statuses</option>
                     <option value="Paid">Paid</option>
                     <option value="Pending">Pending</option>
                     <option value="Overdue">Overdue</option>
                 </select>
-                <button id="send-all-reminders-btn" class="btn btn-secondary"
-                    style="background-color: var(--danger-red); color: white; border: none; margin-left: auto; padding: 6px 12px; cursor: pointer; border-radius: 4px;">Send
-                    Reminder to All Unpaid</button>
+                <button id="send-all-reminders-btn" class="btn"
+                    style="background:var(--danger);color:white;margin-left:auto;">
+                    Send Reminder to All Unpaid
+                </button>
             </div>
 
-            <div style="overflow-x: auto;">
+            <div style="overflow-x:auto;border-radius:var(--r-lg);">
                 <table>
                     <thead>
                         <tr>
@@ -112,34 +72,36 @@
                             <th>Member ID</th>
                             <th>Payment Status</th>
                             <th>Months Paid</th>
-                            <th>Last Payment Date</th>
+                            <th>Last Payment</th>
                             <th>Actions</th>
                             <th>Reminder</th>
                         </tr>
                     </thead>
                     <tbody id="users-table-body">
                         <tr>
-                            <td colspan="7">Loading users...</td>
+                            <td colspan="8">Loading users&hellip;</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- PRO Admin Tab -->
-        <section id="tab-pro" style="display: none;">
-            <h1>PRO Admin Tools</h1>
-            <p>Upload stories, news, minutes, upcoming events, and gallery pictures.</p>
+        <!-- ═══ TAB: PRO ADMIN TOOLS ═══ -->
+        <section id="tab-pro" style="display:none;">
+            <h1 style="font-size:1.6rem;margin-bottom:0.25rem;">PRO Admin Tools</h1>
+            <p style="color:var(--text-mid);margin-bottom:1.75rem;">Upload stories, news, minutes, events, and gallery
+                pictures.</p>
 
-            <div class="dashboard-grid">
-                <!-- Add News/Story -->
-                <div class="form-container" style="margin: 0; max-width: 100%;">
-                    <h3>Post News / Story / Minutes</h3>
-                    <form id="pro-news-form" style="margin-top: 1rem;">
-                        <input type="hidden" id="pro-token" />
+            <div class="admin-grid">
+
+                <!-- Post News / Story / Minutes -->
+                <div class="glass-card" style="padding:1.75rem;">
+                    <h3 style="margin-bottom:1.25rem;">Post News / Story / Minutes</h3>
+                    <form id="pro-news-form">
+                        <input type="hidden" id="pro-token">
                         <div class="form-group">
                             <label>Type</label>
-                            <select id="news-type" class="status-select" style="width: 100%;">
+                            <select id="news-type" class="status-select" style="width:100%;">
                                 <option value="news">General News</option>
                                 <option value="story">Focus Story (Landing Page)</option>
                                 <option value="minutes">Meeting Minutes</option>
@@ -151,9 +113,8 @@
                         </div>
                         <div class="form-group">
                             <label>Content</label>
-                            <textarea id="news-content" rows="4"
-                                style="width: 100%; border: 1px solid var(--border-color); border-radius: 4px; padding: 0.5rem;"
-                                required></textarea>
+                            <textarea id="news-content" rows="4" required
+                                style="width:100%;border:1.5px solid var(--border-color);border-radius:var(--r-sm);padding:0.65rem;font-family:'Inter',sans-serif;font-size:0.9rem;background:rgba(255,255,255,0.7);resize:vertical;"></textarea>
                         </div>
                         <div class="form-group">
                             <label>Image (Optional)</label>
@@ -163,20 +124,20 @@
                             <label>Document (Optional — PDF, DOC, DOCX, TXT)</label>
                             <input type="file" id="news-document" accept=".pdf,.doc,.docx,.txt">
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Publish Content</button>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">Publish Content</button>
                     </form>
                 </div>
 
-                <!-- Add Event -->
-                <div class="form-container" style="margin: 0; max-width: 100%;">
-                    <h3>Add Upcoming Event</h3>
-                    <form id="pro-event-form" style="margin-top: 1rem;">
+                <!-- Add Upcoming Event -->
+                <div class="glass-card" style="padding:1.75rem;">
+                    <h3 style="margin-bottom:1.25rem;">Add Upcoming Event</h3>
+                    <form id="pro-event-form">
                         <div class="form-group">
                             <label>Event Title</label>
                             <input type="text" id="event-title" required>
                         </div>
                         <div class="form-group">
-                            <label>Date & Time</label>
+                            <label>Date &amp; Time</label>
                             <input type="datetime-local" id="event-date" required>
                         </div>
                         <div class="form-group">
@@ -186,16 +147,16 @@
                         <div class="form-group">
                             <label>Description</label>
                             <textarea id="event-description" rows="3"
-                                style="width: 100%; border: 1px solid var(--border-color); border-radius: 4px; padding: 0.5rem;"></textarea>
+                                style="width:100%;border:1.5px solid var(--border-color);border-radius:var(--r-sm);padding:0.65rem;font-family:'Inter',sans-serif;font-size:0.9rem;background:rgba(255,255,255,0.7);resize:vertical;"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Create Event</button>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">Create Event</button>
                     </form>
                 </div>
 
-                <!-- Add Gallery Picture -->
-                <div class="form-container" style="margin: 0; max-width: 100%;">
-                    <h3>Upload to Gallery</h3>
-                    <form id="pro-gallery-form" style="margin-top: 1rem;">
+                <!-- Upload to Gallery -->
+                <div class="glass-card" style="padding:1.75rem;">
+                    <h3 style="margin-bottom:1.25rem;">Upload to Gallery</h3>
+                    <form id="pro-gallery-form">
                         <div class="form-group">
                             <label>Caption</label>
                             <input type="text" id="gallery-caption">
@@ -204,23 +165,22 @@
                             <label>Image (Required)</label>
                             <input type="file" id="gallery-image" accept="image/*" required>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Upload Picture</button>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">Upload Picture</button>
                     </form>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Payment Modal -->
+    <!-- Payment Modal — all IDs preserved -->
     <div id="payment-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 style="margin:0;">Update Monthly Payments</h3>
                 <button class="modal-close" id="modal-close-btn">&times;</button>
             </div>
-
-            <p style="margin-bottom: 1rem; font-size: 0.9rem;">Select quick options or pick individual months:</p>
-
+            <p style="margin-bottom:1rem;font-size:0.88rem;color:var(--text-mid);">Select quick options or pick
+                individual months:</p>
             <div class="preset-buttons">
                 <button class="btn btn-secondary preset-btn" data-preset="yearly">Yearly</button>
                 <button class="btn btn-secondary preset-btn" data-preset="h1">1st Half</button>
@@ -230,9 +190,8 @@
                 <button class="btn btn-secondary preset-btn" data-preset="q3">Q3</button>
                 <button class="btn btn-secondary preset-btn" data-preset="q4">Q4</button>
                 <button class="btn btn-secondary preset-btn" data-preset="clear"
-                    style="color: var(--danger-red); border-color: var(--danger-red);">Clear All</button>
+                    style="color:var(--danger);border-color:var(--danger);">Clear All</button>
             </div>
-
             <div class="months-grid">
                 <label class="month-checkbox-group"><input type="checkbox" value="Jan" class="month-check"> Jan</label>
                 <label class="month-checkbox-group"><input type="checkbox" value="Feb" class="month-check"> Feb</label>
@@ -247,20 +206,16 @@
                 <label class="month-checkbox-group"><input type="checkbox" value="Nov" class="month-check"> Nov</label>
                 <label class="month-checkbox-group"><input type="checkbox" value="Dec" class="month-check"> Dec</label>
             </div>
-
-            <button class="btn btn-primary" id="save-payment-btn" style="width: 100%;">Save Payments</button>
+            <button class="btn btn-primary" id="save-payment-btn" style="width:100%;">Save Payments</button>
         </div>
     </div>
-
-    <!-- <footer style="margin-top: auto;">
-        <p>&copy; 2024 FGGC Alumni Association.</p>
-    </footer> -->
 
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/admin-dashboard.js?v=2"></script>
+    <script src="js/animations.js"></script>
     <script>
-        // Tab switching logic
+        // Tab switching logic — preserved exactly
         const tabs = ['users', 'pro'];
         tabs.forEach(tab => {
             document.getElementById(`tab-${tab}-btn`).addEventListener('click', (e) => {
@@ -276,22 +231,17 @@
         const loggedInUser = JSON.parse(localStorage.getItem('user'));
         const token = localStorage.getItem('token');
 
-        // Show relevant tabs based on role
         if (loggedInUser) {
             if (!loggedInUser.is_admin && loggedInUser.is_pro_admin) {
-                // Pure PRO admin: only sees PRO tools
                 document.getElementById('tab-users-btn').style.display = 'none';
                 document.getElementById('tab-users').style.display = 'none';
-                document.getElementById('nav-admin-title').textContent = 'PRO Dashboard';
+                document.getElementById('nav-admin-title').textContent = 'PRO';
                 document.getElementById('tab-pro-btn').click();
             } else if (loggedInUser.is_admin && !loggedInUser.is_pro_admin) {
-                // Pure Admin: hides PRO tools tab
                 document.getElementById('tab-pro-btn').style.display = 'none';
-                // (tab-users is active by default in HTML)
             }
         }
 
-        // Returns true on success, false on failure
         const handleUpload = async (url, formData) => {
             try {
                 const res = await fetch(API_URL + url, {
@@ -299,7 +249,6 @@
                     headers: { 'Authorization': 'Bearer ' + token },
                     body: formData
                 });
-                // Guard against server returning HTML error pages instead of JSON
                 const contentType = res.headers.get('content-type') || '';
                 let data;
                 if (contentType.includes('application/json')) {
@@ -309,20 +258,14 @@
                     data = { message: `Server error (${res.status}) — check that the server is running.` };
                     console.error('Non-JSON response:', text.substring(0, 300));
                 }
-                if (res.ok) {
-                    alert('Successfully uploaded!');
-                    return true;
-                } else {
-                    alert('Error: ' + data.message);
-                    return false;
-                }
+                if (res.ok) { alert('Successfully uploaded!'); return true; }
+                else { alert('Error: ' + data.message); return false; }
             } catch (e) {
                 alert('Upload failed: ' + e);
                 return false;
             }
         };
 
-        // Helper: disable submit button and show loading text while uploading
         const withLoadingBtn = async (form, uploadFn) => {
             const btn = form.querySelector('button[type="submit"]');
             const originalText = btn.textContent;
