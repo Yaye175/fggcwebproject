@@ -117,8 +117,8 @@
                                 style="width:100%;border:1.5px solid var(--border-color);border-radius:var(--r-sm);padding:0.65rem;font-family:'Inter',sans-serif;font-size:0.9rem;background:rgba(255,255,255,0.7);resize:vertical;"></textarea>
                         </div>
                         <div class="form-group">
-                            <label>Image (Optional)</label>
-                            <input type="file" id="news-image" accept="image/*">
+                            <label>Image or Video (Optional)</label>
+                            <input type="file" id="news-image" accept="image/*,video/*">
                         </div>
                         <div class="form-group">
                             <label>Document (Optional — PDF, DOC, DOCX, TXT)</label>
@@ -149,6 +149,10 @@
                             <textarea id="event-description" rows="3"
                                 style="width:100%;border:1.5px solid var(--border-color);border-radius:var(--r-sm);padding:0.65rem;font-family:'Inter',sans-serif;font-size:0.9rem;background:rgba(255,255,255,0.7);resize:vertical;"></textarea>
                         </div>
+                        <div class="form-group">
+                            <label>Image or Video (Optional)</label>
+                            <input type="file" id="event-media" accept="image/*,video/*">
+                        </div>
                         <button type="submit" class="btn btn-primary" style="width:100%;">Create Event</button>
                     </form>
                 </div>
@@ -162,10 +166,10 @@
                             <input type="text" id="gallery-caption">
                         </div>
                         <div class="form-group">
-                            <label>Image (Required)</label>
-                            <input type="file" id="gallery-image" accept="image/*" required>
+                            <label>Image or Video (Required)</label>
+                            <input type="file" id="gallery-media" accept="image/*,video/*" required>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width:100%;">Upload Picture</button>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">Upload to Gallery</button>
                     </form>
                 </div>
             </div>
@@ -303,6 +307,8 @@
                 formData.append('event_date', document.getElementById('event-date').value);
                 formData.append('location', document.getElementById('event-location').value);
                 formData.append('description', document.getElementById('event-description').value);
+                const media = document.getElementById('event-media').files[0];
+                if (media) formData.append('image', media);
                 return handleUpload('/events', formData);
             });
         });
@@ -312,7 +318,7 @@
             await withLoadingBtn(e.target, () => {
                 const formData = new FormData();
                 formData.append('caption', document.getElementById('gallery-caption').value);
-                formData.append('image', document.getElementById('gallery-image').files[0]);
+                formData.append('media', document.getElementById('gallery-media').files[0]);
                 return handleUpload('/gallery', formData);
             });
         });

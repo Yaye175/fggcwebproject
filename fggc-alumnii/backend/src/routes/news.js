@@ -13,17 +13,20 @@ fs.mkdirSync(uploadsDir, { recursive: true });
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, uploadsDir),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/[^a-zA-Z0-9.]/g, '_'))
 });
+
+const ALLOWED_NEWS_VIDEO = /^(mp4|webm|mov|m4v|ogg)$/i;
 
 // Accept both image and document fields
 const upload = multer({
     storage,
+    limits: { fileSize: 200 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
-        const allowedImage = /jpeg|jpg|png|gif|webp/i;
-        const allowedDoc   = /pdf|doc|docx|txt/i;
+        const allowedImage = /^(jpeg|jpg|png|gif|webp)$/i;
+        const allowedDoc   = /^(pdf|doc|docx|txt)$/i;
         const ext = path.extname(file.originalname).slice(1);
-        if (file.fieldname === 'image' && allowedImage.test(ext)) return cb(null, true);
+        if (file.fieldname === 'image' && (allowedImage.test(ext) || ALLOWED_NEWS_VIDEO.test(ext))) return cb(null, true);
         if (file.fieldname === 'document' && allowedDoc.test(ext)) return cb(null, true);
         cb(new Error(`File type .${ext} is not allowed for field "${file.fieldname}"`));
     }
@@ -58,6 +61,16 @@ function toDataUrl(filePath) {
     }
 }
 
+function enrichMediaField(obj) {
+    if (!obj.image) return;
+    const ext = path.extname(obj.image).slice(1).toLowerCase();
+    if (ALLOWED_NEWS_VIDEO.test(ext)) {
+        obj.videoUrl = obj.image;
+    } else {
+        obj.imageData = toDataUrl(path.join(uploadsDir, path.basename(obj.image)));
+    }
+}
+
 // GET /news - List news/minutes with embedded file data
 router.get('/', async (req, res) => {
     const type = req.query.type || 'news';
@@ -67,9 +80,7 @@ router.get('/', async (req, res) => {
         );
         const enriched = newsItems.map(item => {
             const result = { ...item };
-            if (item.image) {
-                result.imageData = toDataUrl(path.join(uploadsDir, path.basename(item.image)));
-            }
+            enrichMediaField(result);
             if (item.document) {
                 const docPath = path.join(uploadsDir, path.basename(item.document));
                 result.documentData = toDataUrl(docPath);
@@ -92,9 +103,7 @@ router.get('/latest-story', async (req, res) => {
         );
         if (stories.length === 0) return res.json(null);
         const story = stories[0];
-        if (story.image) {
-            story.imageData = toDataUrl(path.join(uploadsDir, path.basename(story.image)));
-        }
+        enrichMediaField(story);
         res.json(story);
     } catch (error) {
         console.error(error);

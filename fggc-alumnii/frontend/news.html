@@ -66,19 +66,25 @@
                         return;
                     }
                     container.innerHTML = res.map(item => `
-                    <div class="news-item">
-                        ${item.imageData ? `<img src="${item.imageData}" alt="News Image">` : ''}
-                        <div class="news-content">
-                            <h3>${item.title}</h3>
-                            <div class="news-date">${new Date(item.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
-                            <p>${item.content.replace(/\n/g, '<br>')}</p>
-                            ${item.documentData ? `
-                            <a href="${item.documentData}"
-                               download="${item.documentName || 'document'}"
-                               class="btn btn-secondary"
-                               style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.75rem;font-size:0.82rem;">
-                                &#128196; Download ${item.documentName || 'Document'}
-                            </a>` : ''}
+                        <div class="news-item" style="${item.videoUrl ? 'flex-direction:column;' : ''}">
+                            ${item.videoUrl
+                ? `<video src="${API_URL}${item.videoUrl}" controls style="width:100%;border-radius:8px;margin-bottom:0.75rem;"></video>`
+                : item.imageData
+                    ? `<img src="${item.imageData}" alt="News Image">`
+                    : ''
+            }
+                            <div class="news-content">
+                                <h3>${item.title}</h3>
+                                <div class="news-date">${new Date(item.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                                <p>${item.content.replace(/\n/g, '<br>')}</p>
+                                ${item.documentData ? `
+                                <a href="${item.documentData}"
+                                   download="${item.documentName || 'document'}"
+                                   class="btn btn-secondary"
+                                   style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.75rem;font-size:0.82rem;">
+                                    &#128196; Download ${item.documentName || 'document'}
+                                </a>` : ''}
+                            </div>
                         </div>
                     </div>
                 `).join('');
