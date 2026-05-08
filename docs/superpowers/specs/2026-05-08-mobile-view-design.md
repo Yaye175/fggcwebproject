@@ -98,7 +98,7 @@ No new CSS files, no framework changes. All additions go into `styles.css` withi
 **Problem:** Form containers may have fixed widths or excess padding on small screens.
 
 **Solution (≤768px):**
-- Form container: `width: 100%; max-width: 100%; margin: 0; border-radius: 0` or `16px` side margins
+- Form container: `width: calc(100% - 32px); margin: 0 16px` — keeps the glass card border radius, just adds breathing room from screen edges
 - Input fields: `width: 100%; box-sizing: border-box`
 - Submit buttons: `width: 100%`
 - Reduce top/bottom padding on the page wrapper
@@ -121,6 +121,6 @@ Applied globally — no layout changes, only:
 
 - All changes go into `frontend/css/styles.css` within the existing `@media` blocks
 - The `.mobile-bottom-nav` HTML block must be added to all 11 HTML files
-- The bottom nav active state is controlled by a `data-page` attribute or by adding an `active` class via JS (matching the current page URL)
+- The bottom nav active state is set by a small inline script on each page: reads `window.location.pathname` and adds the `active` class to the matching tab anchor
 - The floating pill nav hidden class: confirm the exact selector in the current CSS before hiding it
 - Test on Chrome DevTools mobile emulation (iPhone SE 375px, iPhone 14 390px, Pixel 7 412px) before marking complete
