@@ -1,0 +1,90 @@
+<h2>Dashboard: Monthly dues layout on mobile</h2>
+<p class="subtitle">The desktop version shows 4 due cards in a row. How should they appear on a phone?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="2col" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F7F3ED;padding:16px;border-radius:10px 10px 0 0;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:#fff;border-radius:10px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <div style="font-size:9px;color:#888;margin-bottom:4px;">January</div>
+          <div style="font-size:11px;font-weight:700;color:#0D2B4E;">₦5,000</div>
+          <div style="margin-top:6px;background:#2E8B57;border-radius:20px;padding:2px 6px;font-size:8px;color:#fff;display:inline-block;">Paid</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <div style="font-size:9px;color:#888;margin-bottom:4px;">February</div>
+          <div style="font-size:11px;font-weight:700;color:#0D2B4E;">₦5,000</div>
+          <div style="margin-top:6px;background:#D9534F;border-radius:20px;padding:2px 6px;font-size:8px;color:#fff;display:inline-block;">Unpaid</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <div style="font-size:9px;color:#888;margin-bottom:4px;">March</div>
+          <div style="font-size:11px;font-weight:700;color:#0D2B4E;">₦5,000</div>
+          <div style="margin-top:6px;background:#2E8B57;border-radius:20px;padding:2px 6px;font-size:8px;color:#fff;display:inline-block;">Paid</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <div style="font-size:9px;color:#888;margin-bottom:4px;">April</div>
+          <div style="font-size:11px;font-weight:700;color:#0D2B4E;">₦5,000</div>
+          <div style="margin-top:6px;background:#D9534F;border-radius:20px;padding:2px 6px;font-size:8px;color:#fff;display:inline-block;">Unpaid</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — 2 columns</h3>
+      <p>Cards arranged in pairs. Compact, still shows multiple months at a glance.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="1col-scroll" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F7F3ED;padding:16px;border-radius:10px 10px 0 0;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="background:#fff;border-radius:10px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:9px;color:#888;">January</div>
+            <div style="font-size:12px;font-weight:700;color:#0D2B4E;">₦5,000</div>
+          </div>
+          <div style="background:#2E8B57;border-radius:20px;padding:3px 10px;font-size:8px;color:#fff;">Paid</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:9px;color:#888;">February</div>
+            <div style="font-size:12px;font-weight:700;color:#0D2B4E;">₦5,000</div>
+          </div>
+          <div style="background:#D9534F;border-radius:20px;padding:3px 10px;font-size:8px;color:#fff;">Unpaid</div>
+        </div>
+        <div style="font-size:10px;color:#5BAACC;text-align:center;">scroll for more ↓</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Single column list</h3>
+      <p>Each month as a full-width row with name + amount + status. Easier to read, scrollable.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="horizontal-scroll" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F7F3ED;padding:16px;border-radius:10px 10px 0 0;overflow:hidden;">
+      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;">
+        <div style="background:#fff;border-radius:10px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);min-width:80px;flex-shrink:0;text-align:center;">
+          <div style="font-size:8px;color:#888;margin-bottom:4px;">Jan</div>
+          <div style="font-size:11px;font-weight:700;color:#0D2B4E;">₦5k</div>
+          <div style="margin-top:6px;background:#2E8B57;border-radius:20px;padding:2px 4px;font-size:7px;color:#fff;">Paid</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);min-width:80px;flex-shrink:0;text-align:center;">
+          <div style="font-size:8px;color:#888;margin-bottom:4px;">Feb</div>
+          <div style="font-size:11px;font-weight:700;color:#0D2B4E;">₦5k</div>
+          <div style="margin-top:6px;background:#D9534F;border-radius:20px;padding:2px 4px;font-size:7px;color:#fff;">Unpaid</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);min-width:80px;flex-shrink:0;text-align:center;">
+          <div style="font-size:8px;color:#888;margin-bottom:4px;">Mar</div>
+          <div style="font-size:11px;font-weight:700;color:#0D2B4E;">₦5k</div>
+          <div style="margin-top:6px;background:#2E8B57;border-radius:20px;padding:2px 4px;font-size:7px;color:#fff;">Paid</div>
+        </div>
+        <div style="font-size:10px;color:#5BAACC;display:flex;align-items:center;padding:0 4px;">→</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Horizontal scroll strip</h3>
+      <p>Cards stay side-by-side but scroll horizontally. Keeps the card visual, feels modern.</p>
+    </div>
+  </div>
+
+</div>
