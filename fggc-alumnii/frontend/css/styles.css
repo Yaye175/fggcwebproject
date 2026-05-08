@@ -1255,7 +1255,6 @@ footer a {
     /* Admin table: enforce min-width so columns stay readable inside the existing overflow-x wrapper */
     table {
         min-width: 620px;
-        border-radius: 0;
     }
 
     .page-below {
