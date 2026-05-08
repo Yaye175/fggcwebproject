@@ -1192,6 +1192,72 @@ footer a {
         padding-bottom: 70px;
     }
 
+    /* Hide decorative blobs on mobile — they clip and overflow */
+    .blob {
+        display: none;
+    }
+
+    /* Bento grid: ensure sidebar is full-width at 768px */
+    .bento-sidebar {
+        width: 100%;
+    }
+
+    /* Hero card: tighten for small screens */
+    .hero-card-wrap {
+        padding: 1rem;
+    }
+
+    /* Monthly dues: horizontal scroll strip instead of 4-column grid */
+    .user-month-grid {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 0.6rem;
+        padding-bottom: 6px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .user-month-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    .month-box {
+        flex-shrink: 0;
+        width: 80px;
+        padding: 0.65rem 0.25rem;
+    }
+
+    /* Pill tabs: full-width equal tabs */
+    .pill-tabs {
+        gap: 0.35rem;
+    }
+
+    .news-tab {
+        flex: 1;
+        text-align: center;
+        padding: 0.5rem 0.5rem;
+    }
+
+    /* News items: stack image above text */
+    .news-item {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .news-item img {
+        width: 100%;
+        height: 180px;
+        border-radius: var(--r-md);
+    }
+
+    /* Admin table: enforce min-width so columns stay readable inside the existing overflow-x wrapper */
+    table {
+        min-width: 620px;
+        border-radius: 0;
+    }
+
     .page-below {
         padding: 1.5rem 1rem;
     }
@@ -1215,6 +1281,11 @@ footer a {
     .form-container,
     .form-container--dark {
         padding: 1.75rem 1.25rem;
+        width: calc(100% - 32px);
+        max-width: 100%;
+        margin-left: 16px;
+        margin-right: 16px;
+        box-sizing: border-box;
     }
 
     .dashboard-grid,
@@ -1230,6 +1301,36 @@ footer a {
         position: relative !important;
         z-index: 9999 !important;
         cursor: pointer !important;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Tighten padding on cards and main content areas */
+    .glass-card {
+        padding: 1.1rem !important;
+    }
+
+    main {
+        padding: 1rem 0.75rem;
+    }
+
+    .page-below {
+        padding: 1rem 0.75rem;
+    }
+
+    /* Prevent any horizontal overflow */
+    body {
+        overflow-x: hidden;
+    }
+
+    /* Stat grid stays single column on very small phones */
+    .stat-card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Hero card: minimal padding */
+    .hero-card {
+        padding: 1.25rem 1rem;
     }
 }
 
