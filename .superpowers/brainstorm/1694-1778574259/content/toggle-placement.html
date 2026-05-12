@@ -1,0 +1,79 @@
+<h2>Where should the dark mode toggle live?</h2>
+<p class="subtitle">Pick the placement that feels most natural for the FGGC alumni site</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="pill-nav" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F7F3ED;padding:16px;border-radius:10px 10px 0 0;">
+      <div style="display:flex;justify-content:center;">
+        <div style="background:rgba(13,43,78,0.08);border-radius:50px;padding:10px 20px;display:flex;align-items:center;gap:12px;border:1px solid rgba(13,43,78,0.12);">
+          <div style="width:20px;height:20px;background:#5BAACC;border-radius:50%;"></div>
+          <span style="color:#0D2B4E;font-size:12px;font-weight:600;">FGGC Alumni</span>
+          <span style="color:#0D2B4E;font-size:12px;">Home</span>
+          <span style="color:#0D2B4E;font-size:12px;">About</span>
+          <span style="color:#0D2B4E;font-size:12px;">News</span>
+          <span style="color:#0D2B4E;font-size:12px;">Gallery</span>
+          <!-- Toggle button in nav -->
+          <div style="width:34px;height:18px;background:#0D2B4E;border-radius:50px;position:relative;cursor:pointer;">
+            <div style="width:14px;height:14px;background:#fff;border-radius:50%;position:absolute;right:2px;top:2px;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;background:rgba(13,43,78,0.04);border-radius:10px;height:60px;display:flex;align-items:center;justify-content:center;">
+        <span style="color:#7A7A8C;font-size:11px;">Page content</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Inside the desktop nav pill</h3>
+      <p>Toggle sits at the right end of the floating glass nav. Always visible on desktop. Clean, no extra UI.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="bottom-nav" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F7F3ED;padding:16px;border-radius:10px 10px 0 0;position:relative;min-height:120px;">
+      <div style="font-size:11px;color:#7A7A8C;text-align:center;padding:20px 0;">Page content</div>
+      <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(13,43,78,0.95);display:flex;justify-content:space-around;align-items:center;padding:10px 0;border-radius:0 0 10px 10px;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+          <div style="width:16px;height:16px;background:#5BAACC;border-radius:3px;"></div>
+          <span style="color:#5BAACC;font-size:8px;">Home</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+          <div style="width:16px;height:16px;background:rgba(255,255,255,0.3);border-radius:3px;"></div>
+          <span style="color:rgba(255,255,255,0.5);font-size:8px;">About</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+          <div style="width:16px;height:16px;background:rgba(255,255,255,0.3);border-radius:3px;"></div>
+          <span style="color:rgba(255,255,255,0.5);font-size:8px;">Gallery</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+          <div style="width:16px;height:16px;background:rgba(255,255,255,0.3);border-radius:3px;"></div>
+          <span style="color:rgba(255,255,255,0.5);font-size:8px;">News</span>
+        </div>
+        <!-- Dark mode tab -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+          <div style="width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#fff 50%,#0D2B4E 50%);"></div>
+          <span style="color:rgba(255,255,255,0.5);font-size:8px;">Theme</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — 6th tab in the mobile bottom nav</h3>
+      <p>A "Theme" tab added to the bottom nav on mobile. Tapping it toggles dark/light. Consistent with the nav pattern.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="floating-btn" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F7F3ED;padding:16px;border-radius:10px 10px 0 0;position:relative;min-height:120px;">
+      <div style="font-size:11px;color:#7A7A8C;text-align:center;padding:20px 0;">Page content</div>
+      <!-- Floating toggle button -->
+      <div style="position:absolute;bottom:16px;right:16px;width:40px;height:40px;background:#0D2B4E;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(13,43,78,0.25);">
+        <div style="width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#fff 50%,#5BAACC 50%);"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Floating button (bottom-right corner)</h3>
+      <p>A small circular button fixed to the bottom-right of every page. Always visible on both desktop and mobile. Common pattern, very discoverable.</p>
+    </div>
+  </div>
+
+</div>
