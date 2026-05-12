@@ -44,6 +44,114 @@
     --shadow-modal: 0 16px 56px rgba(13, 43, 78, 0.16);
 }
 
+/* ── Dark Mode ── */
+[data-theme="dark"] {
+    --cream: #0D1B2E;
+    --cream-deep: #091520;
+    --pearl: #112338;
+    --navy: #E8E4DC;
+    --text-dark: #E8E4DC;
+    --text-mid: #9AADBE;
+    --text-body: #B8C8D8;
+    --border-color: rgba(91, 170, 204, 0.15);
+    --shadow-card: 0 8px 40px rgba(0, 0, 0, 0.35);
+    --shadow-raised: 0 16px 56px rgba(0, 0, 0, 0.55);
+    --shadow-nav: 0 4px 24px rgba(0, 0, 0, 0.40);
+    /* Legacy aliases */
+    --primary-navy: #E8E4DC;
+    --bg-cream: #0D1B2E;
+    --bg-pearl: #112338;
+    --bg-white: #112338;
+    --bg-light: #0D1B2E;
+}
+
+[data-theme="dark"] .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(91, 170, 204, 0.15);
+}
+
+[data-theme="dark"] .glass-card--dark {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(91, 170, 204, 0.12);
+}
+
+[data-theme="dark"] .nav-pill--light {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(91, 170, 204, 0.15);
+}
+
+[data-theme="dark"] .nav-pill--dark {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] table {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .news-item {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(91, 170, 204, 0.12);
+}
+
+[data-theme="dark"] .form-container {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .news-tab:not(.active) {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] tbody tr:hover {
+    background: rgba(91, 170, 204, 0.08);
+}
+
+[data-theme="dark"] th {
+    background: rgba(13, 43, 78, 0.8);
+}
+
+/* ── Theme Toggle Button ── */
+.theme-toggle {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    background: var(--navy);
+    color: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 250;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-raised);
+}
+
+.theme-icon-moon { display: block; }
+.theme-icon-sun  { display: none; }
+
+[data-theme="dark"] .theme-icon-moon { display: none; }
+[data-theme="dark"] .theme-icon-sun  { display: block; }
+
+[data-theme="dark"] .theme-toggle {
+    background: #5BAACC;
+    color: #0D1B2E;
+}
+
+@media (max-width: 768px) {
+    .theme-toggle {
+        bottom: calc(70px + env(safe-area-inset-bottom) + 1rem);
+        right: 1rem;
+    }
+}
+
 /* ── Reset ── */
 *,
 *::before,
