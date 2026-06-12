@@ -1,1 +1,21 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Uploaded files
+uploads/
+
+# Development tools
+ngrok.exe
+ngrok.zip
 .worktrees/
+
+# IDE
+.history/
+.superpowers/
+
+# OS
+Thumbs.db
+.DS_Store

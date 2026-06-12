@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS fggc_alumni;
+CREATE DATABASE IF NOT EXISTS fggc_alumnii;
 USE fggc_alumnii;
 
 CREATE TABLE IF NOT EXISTS users (
@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS news (
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     image VARCHAR(255),
+    document VARCHAR(255),
     type ENUM('news', 'minutes', 'story') DEFAULT 'news',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

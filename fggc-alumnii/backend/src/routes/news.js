@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
+const proAdminMiddleware = require('../middleware/proAdminMiddleware');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -34,11 +35,6 @@ const upload = multer({
     { name: 'image',    maxCount: 1 },
     { name: 'document', maxCount: 1 }
 ]);
-
-const proAdminMiddleware = (req, res, next) => {
-    if (req.user && (req.user.is_admin || req.user.is_pro_admin)) return next();
-    return res.status(403).json({ message: 'Access denied: Pro Admin role required' });
-};
 
 // Helper — read a file and return a base64 data URL
 function toDataUrl(filePath) {

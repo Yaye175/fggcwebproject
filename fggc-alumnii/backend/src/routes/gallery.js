@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
+const proAdminMiddleware = require('../middleware/proAdminMiddleware');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -29,11 +30,6 @@ const upload = multer({
         cb(new Error(`File type .${ext} not allowed. Use jpg, png, gif, webp, mp4, webm, mov, m4v, or ogg.`));
     }
 });
-
-const proAdminMiddleware = (req, res, next) => {
-    if (req.user && (req.user.is_admin || req.user.is_pro_admin)) return next();
-    return res.status(403).json({ message: 'Access denied: Pro Admin role required' });
-};
 
 // GET /gallery — returns media with url and type so frontend can render appropriately
 router.get('/', async (req, res) => {

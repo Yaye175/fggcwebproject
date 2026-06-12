@@ -74,7 +74,7 @@ async function sendReminders(targetUserId = null) {
             let message = {};
             if (user.effective_status === 'Overdue') {
                 message = {
-                    from: '"FGGC Alumni Finance 👻" <finance@fggc-alumni.com>',
+                    from: `"FGGC Alumni Finance" <${process.env.EMAIL_USER}>`,
                     to: user.email,
                     subject: 'URGENT: Overdue Alumni Dues ❗',
                     text: `Hello ${user.first_name},\n\nOur records show that your alumni dues for ${currentYear} are currently severely overdue (3+ months). Please log in to your dashboard to complete your payment as soon as possible.\n\nThank you for supporting the FGGC Alumni Association!`,
@@ -82,7 +82,7 @@ async function sendReminders(targetUserId = null) {
                 };
             } else {
                 message = {
-                    from: '"FGGC Alumni Finance 👻" <finance@fggc-alumni.com>',
+                    from: `"FGGC Alumni Finance" <${process.env.EMAIL_USER}>`,
                     to: user.email,
                     subject: 'Action Required: Pending Alumni Dues ✔',
                     text: `Hello ${user.first_name},\n\nThis is a gentle reminder that your alumni dues for ${currentYear} are currently pending. Please log in to your dashboard to complete your payment.\n\nThank you for supporting the FGGC Alumni Association!`,
