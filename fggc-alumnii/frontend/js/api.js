@@ -1,4 +1,7 @@
-const API_URL = 'http://localhost:5000';
+// Empty = same origin as the page that loaded this script. The backend serves
+// the frontend, so requests go to the right host automatically in dev and prod
+// (no hardcoded localhost that would break once deployed).
+const API_URL = '';
 
 // Escape untrusted strings before inserting into innerHTML (prevents stored XSS).
 function escapeHtml(value) {
