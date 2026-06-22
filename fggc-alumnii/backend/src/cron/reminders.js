@@ -69,24 +69,41 @@ async function sendReminders(targetUserId = null) {
         let sentCount = 0;
         let testMessageUrls = [];
 
-        // Note: Using Promise.all or continuing on catch in case one email fails
+        // Shared sender identity and footer. Plainly-identified, low-key
+        // transactional mail lands in the inbox far more reliably than urgent,
+        // emoji-laden, all-caps subject lines — those score as spam. We also set
+        // replyTo and a footer explaining why the member is receiving this.
+        const fromAddress = `"FGGC Alumni Association" <${process.env.EMAIL_USER}>`;
+        const dashboardUrl = process.env.FRONTEND_URL || '';
+        const loginLineText = dashboardUrl
+            ? `You can log in to your dashboard to review and pay: ${dashboardUrl}`
+            : `Please log in to your dashboard on our website to review and pay.`;
+        const loginLineHtml = dashboardUrl
+            ? `<p>You can <a href="${dashboardUrl}">log in to your dashboard</a> to review and pay.</p>`
+            : `<p>Please log in to your dashboard on our website to review and pay.</p>`;
+        const footerText = `\n\n—\nFGGC Alumni Association\nYou're receiving this because you're a registered member. If you've already paid or think this was sent in error, just reply to this email and we'll sort it out.`;
+        const footerHtml = `<hr style="border:none;border-top:1px solid #ddd;margin:24px 0;"><p style="font-size:12px;color:#777;">FGGC Alumni Association<br>You're receiving this because you're a registered member. If you've already paid or think this was sent in error, just reply to this email and we'll sort it out.</p>`;
+
+        // Continue on catch so one failed send doesn't abort the batch.
         for (let user of users) {
             let message = {};
             if (user.effective_status === 'Overdue') {
                 message = {
-                    from: `"FGGC Alumni Finance" <${process.env.EMAIL_USER}>`,
+                    from: fromAddress,
+                    replyTo: process.env.EMAIL_USER,
                     to: user.email,
-                    subject: 'URGENT: Overdue Alumni Dues ❗',
-                    text: `Hello ${user.first_name},\n\nOur records show that your alumni dues for ${currentYear} are currently severely overdue (3+ months). Please log in to your dashboard to complete your payment as soon as possible.\n\nThank you for supporting the FGGC Alumni Association!`,
-                    html: `<p>Hello <b>${user.first_name}</b>,</p><p>Our records show that your alumni dues for ${currentYear} are currently <b style="color:red;">severely overdue</b> (3 or more months behind).</p><p>Please log in to your dashboard to complete your payment as soon as possible.</p><p>Thank you for supporting the FGGC Alumni Association!</p>`
+                    subject: `Your FGGC alumni dues for ${currentYear} are overdue`,
+                    text: `Hi ${user.first_name},\n\nThis is a reminder that your FGGC Alumni Association dues for ${currentYear} are now overdue. Whenever you have a moment, please bring your account up to date. ${loginLineText}\n\nThank you for being part of the FGGC alumni community.${footerText}`,
+                    html: `<p>Hi ${user.first_name},</p><p>This is a reminder that your FGGC Alumni Association dues for ${currentYear} are now <b>overdue</b>. Whenever you have a moment, please bring your account up to date.</p>${loginLineHtml}<p>Thank you for being part of the FGGC alumni community.</p>${footerHtml}`
                 };
             } else {
                 message = {
-                    from: `"FGGC Alumni Finance" <${process.env.EMAIL_USER}>`,
+                    from: fromAddress,
+                    replyTo: process.env.EMAIL_USER,
                     to: user.email,
-                    subject: 'Action Required: Pending Alumni Dues ✔',
-                    text: `Hello ${user.first_name},\n\nThis is a gentle reminder that your alumni dues for ${currentYear} are currently pending. Please log in to your dashboard to complete your payment.\n\nThank you for supporting the FGGC Alumni Association!`,
-                    html: `<p>Hello <b>${user.first_name}</b>,</p><p>This is a gentle reminder that your alumni dues for ${currentYear} are currently pending.</p><p>Please log in to your dashboard to complete your payment.</p><p>Thank you for supporting the FGGC Alumni Association!</p>`
+                    subject: `A reminder about your FGGC alumni dues for ${currentYear}`,
+                    text: `Hi ${user.first_name},\n\nThis is a friendly reminder that your FGGC Alumni Association dues for ${currentYear} are still pending. When you have a chance, please complete your payment. ${loginLineText}\n\nThank you for being part of the FGGC alumni community.${footerText}`,
+                    html: `<p>Hi ${user.first_name},</p><p>This is a friendly reminder that your FGGC Alumni Association dues for ${currentYear} are still pending. When you have a chance, please complete your payment.</p>${loginLineHtml}<p>Thank you for being part of the FGGC alumni community.</p>${footerHtml}`
                 };
             }
 
