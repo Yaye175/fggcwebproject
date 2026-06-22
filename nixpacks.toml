@@ -1,0 +1,15 @@
+# Railway / Nixpacks build config.
+#
+# The backend (fggc-alumnii/backend) serves the frontend from a SIBLING directory
+# (../../frontend), so the whole repo must be present in the image. Build from the
+# repo root — leave Railway's "Root Directory" EMPTY. Do not set it to the backend
+# folder, or the frontend is excluded and the site won't load.
+#
+# These commands override the defaults so only the backend's dependencies are
+# installed and the backend is what gets started (not the vestigial root package).
+
+[phases.install]
+cmds = ["npm install --prefix fggc-alumnii/backend"]
+
+[start]
+cmd = "npm start --prefix fggc-alumnii/backend"

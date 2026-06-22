@@ -29,14 +29,14 @@ is optional — see the security notes.)
 1. Railway → **New Project → Deploy from GitHub repo** → pick `fggcwebproject`.
 2. After it imports, open the created **service → Settings**.
 
-## Step 3 — Point the service at the backend
-The app lives in a subfolder, so in **Settings → Build**:
-- **Root Directory:** `fggc-alumnii/backend`
-- **Start Command:** `npm start` (already defined in `package.json`)
-
-> The backend serves the frontend via `../../frontend`. If the site loads JSON/404s
-> instead of the homepage after deploy, the static path didn't resolve — tell me and
-> I'll make `index.js` resolve the frontend path robustly.
+## Step 3 — Build configuration (leave Root Directory EMPTY)
+The backend serves the frontend from a **sibling** folder (`../../frontend`), so the
+whole repo must be deployed. A committed `nixpacks.toml` (at the repo root) handles
+build + start, so:
+- **Root Directory:** leave **EMPTY** (build from repo root). Do **not** set it to
+  `fggc-alumnii/backend` — that excludes the frontend and the site won't load.
+- **Start Command:** leave empty — `nixpacks.toml` installs the backend deps and runs
+  `npm start --prefix fggc-alumnii/backend` automatically.
 
 ## Step 4 — Add MySQL
 1. In the project: **New → Database → Add MySQL**.
