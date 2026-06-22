@@ -6,6 +6,12 @@ const pool = require('../db');
 // Connect to real Gmail SMTP server using App Passwords
 const transporter = nodemailer.createTransport({
     service: 'gmail',
+    // Reuse a single authenticated connection across the whole batch instead of
+    // reconnecting + re-authenticating for every message. That per-email TLS +
+    // login handshake was the main source of slowness when sending reminders.
+    pool: true,
+    maxConnections: 5,
+    maxMessages: 100,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
