@@ -2,8 +2,10 @@
   "name": "fggcwebproject",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "fggc-alumnii/backend/src/index.js",
   "scripts": {
+    "postinstall": "npm install --prefix fggc-alumnii/backend",
+    "start": "npm start --prefix fggc-alumnii/backend",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
