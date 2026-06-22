@@ -22,9 +22,30 @@ if (!process.env.JWT_SECRET) {
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Security & Middlewares
+// Behind a TLS-terminating reverse proxy (nginx/Caddy/Render/etc.): trust the
+// first proxy hop so req.ip / rate limiting / secure cookies work correctly.
+app.set('trust proxy', 1);
+
+// Security & Middlewares.
+// CSP keeps 'unsafe-inline' because pages still use inline <script>/style=
+// (e.g. the theme flash-prevention snippet). It still blocks external script
+// loads, object/embed, framing and base-tag hijacking. Output is also escaped
+// at every innerHTML sink, which is the primary XSS defense.
 app.use(helmet({
-    contentSecurityPolicy: false
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:", "blob:"],
+            mediaSrc: ["'self'", "data:", "blob:"],
+            connectSrc: ["'self'"],
+            objectSrc: ["'none'"],
+            baseUri: ["'self'"],
+            frameAncestors: ["'none'"],
+            formAction: ["'self'"]
+        }
+    }
 }));
 
 // CORS — restrict origin from env variable instead of allowing all origins

@@ -1,5 +1,16 @@
 const API_URL = 'http://localhost:5000';
 
+// Escape untrusted strings before inserting into innerHTML (prevents stored XSS).
+function escapeHtml(value) {
+    if (value === null || value === undefined) return '';
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 const api = {
     // Helper for auth headers
     getHeaders: () => {

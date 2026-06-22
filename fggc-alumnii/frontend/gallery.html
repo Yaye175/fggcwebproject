@@ -110,9 +110,9 @@
                                </div>
                                <span class="gallery-video-badge">VIDEO</span>
                            </div>`
-                        : `<img src="${API_URL}${img.url}" alt="${img.caption || 'Alumni Event'}">`
+                        : `<img src="${API_URL}${img.url}" alt="${escapeHtml(img.caption || 'Alumni Event')}">`
                     }
-                    ${img.caption ? `<div class="gal-caption">${img.caption}</div>` : ''}
+                    ${img.caption ? `<div class="gal-caption">${escapeHtml(img.caption)}</div>` : ''}
                 </div>
             `).join('');
 

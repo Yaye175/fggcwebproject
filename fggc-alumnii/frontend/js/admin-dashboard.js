@@ -102,11 +102,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const isUnpaid = effectiveStatus !== 'Paid';
 
             tr.innerHTML = `
-                <td>${user.first_name} ${user.last_name}</td>
-                <td>${user.email}</td>
-                <td>${user.member_id || 'FGGC/' + (user.graduation_year || '0000') + '/000'}</td>
+                <td>${escapeHtml(user.first_name)} ${escapeHtml(user.last_name)}</td>
+                <td>${escapeHtml(user.email)}</td>
+                <td>${escapeHtml(user.member_id || 'FGGC/' + (user.graduation_year || '0000') + '/000')}</td>
                 <td><span class="status-badge ${statusClass}">${effectiveStatus}</span></td>
-                <td>${monthsPaid}</td>
+                <td>${escapeHtml(monthsPaid)}</td>
                 <td>${displayDate}</td>
                 <td>
                     <button class="btn btn-secondary action-btn" data-action="update-payment" data-userid="${user.id}" data-months="${user.months_paid || ''}" style="background:#0a2540; color:white; border:none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">

@@ -75,15 +75,15 @@
                     : ''
             }
                             <div class="news-content">
-                                <h3>${item.title}</h3>
+                                <h3>${escapeHtml(item.title)}</h3>
                                 <div class="news-date">${new Date(item.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
-                                <p>${item.content.replace(/\n/g, '<br>')}</p>
+                                <p>${escapeHtml(item.content).replace(/\n/g, '<br>')}</p>
                                 ${item.documentData ? `
                                 <a href="${item.documentData}"
-                                   download="${item.documentName || 'document'}"
+                                   download="${escapeHtml(item.documentName || 'document')}"
                                    class="btn btn-secondary"
                                    style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.75rem;font-size:0.82rem;">
-                                    &#128196; Download ${item.documentName || 'document'}
+                                    &#128196; Download ${escapeHtml(item.documentName || 'document')}
                                 </a>` : ''}
                             </div>
                         </div>

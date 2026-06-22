@@ -76,7 +76,15 @@ router.post('/signup', [
 });
 
 // POST /auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', [
+    body('email').isEmail().normalizeEmail().withMessage('Valid email address is required'),
+    body('password').isString().notEmpty().withMessage('Password is required'),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ message: errors.array()[0].msg });
+    }
+
     const { email, password } = req.body;
 
     try {
@@ -123,15 +131,23 @@ router.post('/login', async (req, res) => {
 router.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
 
+    // Always return the same response regardless of whether the email exists,
+    // so the endpoint cannot be used to enumerate registered accounts.
+    const genericResponse = { message: 'If an account exists for that email, a password reset link has been sent.' };
+
     try {
+        if (!email || typeof email !== 'string') {
+            return res.json(genericResponse);
+        }
+
         const [users] = await pool.execute('SELECT * FROM users WHERE email = ?', [email]);
         if (users.length === 0) {
-            return res.status(404).json({ message: 'This email does not exist in our system.' });
+            return res.json(genericResponse);
         }
 
         const user = users[0];
         const resetToken = crypto.randomBytes(32).toString('hex');
-        
+
         // Expiry 1 hour from now
         const expiryDate = new Date(Date.now() + 3600000);
 
@@ -153,7 +169,7 @@ router.post('/forgot-password', async (req, res) => {
 
         await transporter.sendMail(message);
 
-        res.json({ message: 'A password reset link has been successfully sent to your email.' });
+        res.json(genericResponse);
     } catch (error) {
         console.error('Forgot password error:', error);
         res.status(500).json({ message: 'Server error processing request' });
@@ -163,6 +179,10 @@ router.post('/forgot-password', async (req, res) => {
 // POST /auth/reset-password
 router.post('/reset-password', async (req, res) => {
     const { email, token, newPassword } = req.body;
+
+    if (!email || !token || typeof newPassword !== 'string' || newPassword.length < 6) {
+        return res.status(400).json({ message: 'A valid token and a password of at least 6 characters are required' });
+    }
 
     try {
         const [users] = await pool.execute(

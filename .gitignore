@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Uploaded files
+uploads/
+
+# Local tooling / tunnels
+ngrok.exe
+ngrok.zip
+.worktrees/
+
+# Editor / IDE history
+.history/
+.superpowers/
+
+# OS
+Thumbs.db
+.DS_Store
