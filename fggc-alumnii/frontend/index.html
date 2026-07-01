@@ -127,9 +127,9 @@
                 } else {
                     storyContainer.innerHTML = `
                     ${story.videoUrl ? `<video src="${API_URL}${story.videoUrl}" controls class="story-img" style="border-radius:8px;"></video>` : story.imageData ? `<img src="${story.imageData}" alt="Story Image" class="story-img">` : ''}
-                    <h3 style="margin-bottom:0.5rem;">${story.title}</h3>
+                    <h3 style="margin-bottom:0.5rem;">${escapeHtml(story.title)}</h3>
                     <div style="color:var(--text-muted);font-size:0.82rem;margin-bottom:1rem;">Published ${new Date(story.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
-                    <p style="white-space:pre-line;line-height:1.75;">${story.content}</p>
+                    <p style="white-space:pre-line;line-height:1.75;">${escapeHtml(story.content)}</p>
                 `;
                 }
             } catch (err) {
@@ -146,9 +146,9 @@
                 } else {
                     eventsContainer.innerHTML = events.map(event => `
                     <div class="glass-card event-card">
-                        <div class="event-date-label">${new Date(event.event_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} &bull; ${event.location || 'TBA'}</div>
-                        <h3 style="font-size:1rem;margin-bottom:0.35rem;">${event.title}</h3>
-                        <p style="color:var(--text-mid);font-size:0.85rem;">${event.description}</p>
+                        <div class="event-date-label">${new Date(event.event_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} &bull; ${escapeHtml(event.location || 'TBA')}</div>
+                        <h3 style="font-size:1rem;margin-bottom:0.35rem;">${escapeHtml(event.title)}</h3>
+                        <p style="color:var(--text-mid);font-size:0.85rem;">${escapeHtml(event.description)}</p>
                     </div>
                 `).join('');
                 }
