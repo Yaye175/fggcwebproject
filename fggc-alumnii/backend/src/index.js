@@ -74,7 +74,7 @@ app.use(express.static(path.join(__dirname, '../../frontend')));
 // Serve uploaded files with explicit cross-origin headers
 app.get('/uploads/:filename', (req, res) => {
     const safeName = path.basename(req.params.filename); // prevent path traversal
-    const filePath = path.join(__dirname, 'uploads', safeName);
+    const filePath = path.join(require('./uploadsDir'), safeName);
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
     res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
     res.sendFile(filePath, (err) => {

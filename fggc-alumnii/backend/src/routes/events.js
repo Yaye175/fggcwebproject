@@ -6,7 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const router = express.Router();
 
-const uploadsDir = path.join(__dirname, '../uploads/');
+const uploadsDir = require('../uploadsDir');
 require('fs').mkdirSync(uploadsDir, { recursive: true });
 
 const ALLOWED_EVENTS = /^(jpg|jpeg|png|gif|webp|mp4|webm|mov|m4v|ogg)$/i;
