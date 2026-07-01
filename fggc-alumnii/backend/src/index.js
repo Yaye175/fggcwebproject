@@ -68,6 +68,17 @@ const authLimiter = rateLimit({
     legacyHeaders: false
 });
 
+// General limiter for the rest of the API — abuse/DoS prevention set high
+// enough not to hinder normal browsing (a page makes several calls). Static
+// files and /uploads are deliberately not limited so pages/galleries load freely.
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 300,
+    message: { message: 'Too many requests, please try again later.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
 const path = require('path');
 // Serve the frontend static files
 app.use(express.static(path.join(__dirname, '../../frontend')));
@@ -84,12 +95,12 @@ app.get('/uploads/:filename', (req, res) => {
 
 // Routes — apply rate limiter to auth routes
 app.use('/auth', authLimiter, authRoutes);
-app.use('/events', eventsRoutes);
-app.use('/payments', paymentsRoutes);
-app.use('/admin/finance', adminFinanceRoutes);
-app.use('/admin', adminRoutes);
-app.use('/gallery', galleryRoutes);
-app.use('/news', newsRoutes);
+app.use('/events', apiLimiter, eventsRoutes);
+app.use('/payments', apiLimiter, paymentsRoutes);
+app.use('/admin/finance', apiLimiter, adminFinanceRoutes);
+app.use('/admin', apiLimiter, adminRoutes);
+app.use('/gallery', apiLimiter, galleryRoutes);
+app.use('/news', apiLimiter, newsRoutes);
 
 // Database check route
 const pool = require('./db');

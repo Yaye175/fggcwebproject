@@ -36,34 +36,16 @@ const upload = multer({
     { name: 'document', maxCount: 1 }
 ]);
 
-// Helper — read a file and return a base64 data URL
-function toDataUrl(filePath) {
-    try {
-        const buf = fs.readFileSync(filePath);
-        const ext = path.extname(filePath).slice(1).toLowerCase();
-        const mime =
-            ext === 'pdf'  ? 'application/pdf' :
-            ext === 'doc'  ? 'application/msword' :
-            ext === 'docx' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' :
-            ext === 'txt'  ? 'text/plain' :
-            ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' :
-            ext === 'png'  ? 'image/png' :
-            ext === 'gif'  ? 'image/gif' :
-            ext === 'webp' ? 'image/webp' :
-            'application/octet-stream';
-        return `data:${mime};base64,${buf.toString('base64')}`;
-    } catch {
-        return null;
-    }
-}
-
+// Attach media as URLs served by the /uploads route. Files are streamed on
+// demand by the browser instead of being read synchronously and base64-inlined
+// into every /news response (which blocked the event loop on large files).
 function enrichMediaField(obj) {
     if (!obj.image) return;
     const ext = path.extname(obj.image).slice(1).toLowerCase();
     if (ALLOWED_NEWS_VIDEO.test(ext)) {
         obj.videoUrl = obj.image;
     } else {
-        obj.imageData = toDataUrl(path.join(uploadsDir, path.basename(obj.image)));
+        obj.imageUrl = obj.image;
     }
 }
 
@@ -78,8 +60,7 @@ router.get('/', async (req, res) => {
             const result = { ...item };
             enrichMediaField(result);
             if (item.document) {
-                const docPath = path.join(uploadsDir, path.basename(item.document));
-                result.documentData = toDataUrl(docPath);
+                result.documentUrl = item.document;
                 result.documentName = path.basename(item.document).replace(/^\d+-/, '');
             }
             return result;
