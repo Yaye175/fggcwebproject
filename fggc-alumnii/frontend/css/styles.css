@@ -489,6 +489,29 @@ main .btn-secondary:hover,
     color: #fff;
 }
 
+/* Log-out button — danger outline that reads on both navy and light cards.
+   Used on the dashboards so mobile users (nav pill hidden) can still sign out. */
+.btn-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: 1.5px solid var(--danger);
+    color: var(--danger);
+}
+
+.btn-logout:hover {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: #fff;
+}
+
+.btn-logout svg {
+    width: 16px;
+    height: 16px;
+}
+
 .btn-navy {
     background: var(--navy);
     color: var(--sky);
