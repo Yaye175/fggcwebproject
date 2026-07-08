@@ -1419,8 +1419,12 @@ footer a {
     input,
     select,
     a {
+        /* NOTE: no inflated z-index here. A previous `z-index: 9999` lifted
+           every button/link above the fixed bottom nav (z-index 300), so page
+           buttons painted on top of the nav bar while scrolling past it. The
+           nav sits above page content via its own stacking context; these
+           elements only need positioning + a pointer cursor. */
         position: relative !important;
-        z-index: 9999 !important;
         cursor: pointer !important;
     }
 }
