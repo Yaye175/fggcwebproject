@@ -146,9 +146,11 @@
 }
 
 @media (max-width: 768px) {
+    /* On mobile the toggle lives inside the bottom nav bar (.theme-nav-tab,
+       injected by theme.js), so the floating FAB is hidden here. It remains
+       the theme control on desktop, where there is no bottom nav bar. */
     .theme-toggle {
-        bottom: calc(70px + env(safe-area-inset-bottom) + 1rem);
-        right: 1rem;
+        display: none !important;
     }
 }
 
@@ -256,6 +258,16 @@ a:hover {
 
     .mobile-nav-tab svg {
         stroke: currentColor;
+    }
+
+    /* Theme toggle rendered as a nav tab (a <button>, so reset its chrome).
+       Only inherit font-family — the size/weight come from .mobile-nav-tab. */
+    .theme-nav-tab {
+        background: none;
+        border: none;
+        font-family: inherit;
+        -webkit-appearance: none;
+        appearance: none;
     }
 }
 

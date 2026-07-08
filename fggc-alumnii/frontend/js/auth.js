@@ -1,12 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Check auth status to toggle navigation links
-    const updateNav = () => {
-        let user = null;
+    // Safely read the stored user once, clearing corrupt data.
+    const getUser = () => {
         try {
-            user = JSON.parse(localStorage.getItem('user'));
+            return JSON.parse(localStorage.getItem('user'));
         } catch (e) {
             localStorage.removeItem('user');
+            return null;
         }
+    };
+
+    const dashboardFor = (user) =>
+        (user.is_admin || user.is_pro_admin) ? 'admin-dashboard.html' : 'dashboard.html';
+
+    // Defense-in-depth: an authenticated user should never be shown the login
+    // form. If they land on login.html (bookmark, back button, a stale tab, or
+    // an old link), send them straight to their dashboard instead of making
+    // them sign in again. replace() keeps login.html out of history.
+    const authedUser = getUser();
+    if (authedUser && document.getElementById('login-form')) {
+        window.location.replace(dashboardFor(authedUser));
+        return;
+    }
+
+    // Check auth status to toggle navigation links
+    const updateNav = () => {
+        const user = getUser();
         const authContainer = document.getElementById('auth-links');
 
         if (authContainer) {
@@ -46,6 +64,28 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     updateNav();
+
+    // Keep the mobile bottom-nav "account" tab in sync with auth state. When
+    // logged in it must lead to the dashboard — not the login page — otherwise
+    // tapping it looks like being logged out and forced to sign in again.
+    const updateBottomNav = () => {
+        const tab = document.querySelector('.mobile-nav-tab[data-page="login"], .mobile-nav-tab[data-page="account"]');
+        if (!tab) return;
+        const label = tab.querySelector('span');
+        const user = getUser();
+        if (user) {
+            tab.setAttribute('href', dashboardFor(user));
+            tab.setAttribute('data-page', 'account');
+            if (label) label.textContent = 'Dashboard';
+            const page = (window.location.pathname.split('/').pop() || '').replace('.html', '');
+            if (page === 'dashboard' || page === 'admin-dashboard') tab.classList.add('active');
+        } else {
+            tab.setAttribute('href', 'login.html');
+            tab.setAttribute('data-page', 'login');
+            if (label) label.textContent = 'Login';
+        }
+    };
+    updateBottomNav();
 
     // Password Reveal Toggle
     const togglePassword = document.getElementById('toggle-password');
