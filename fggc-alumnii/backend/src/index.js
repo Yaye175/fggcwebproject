@@ -20,7 +20,9 @@ if (!process.env.JWT_SECRET) {
 }
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+// Railway injects PORT at runtime; fall back to 8080 to match Railway's
+// default target port so the edge proxy routes correctly if PORT is unset.
+const PORT = process.env.PORT || 8080;
 
 // Behind a TLS-terminating reverse proxy (nginx/Caddy/Render/etc.): trust the
 // first proxy hop so req.ip / rate limiting / secure cookies work correctly.
