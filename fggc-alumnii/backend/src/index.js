@@ -28,6 +28,17 @@ const PORT = process.env.PORT || 8080;
 // first proxy hop so req.ip / rate limiting / secure cookies work correctly.
 app.set('trust proxy', 1);
 
+// Canonical host: 301 the bare apex to the www subdomain so search engines and
+// social scrapers converge on a single canonical origin. Guarded to the exact
+// production apex, so localhost, Railway-internal hosts and health checks are
+// left untouched.
+app.use((req, res, next) => {
+    if (req.headers.host === 'fggcgbokoogaabj.com') {
+        return res.redirect(301, `https://www.fggcgbokoogaabj.com${req.originalUrl}`);
+    }
+    next();
+});
+
 // Security & Middlewares.
 // CSP keeps 'unsafe-inline' because pages still use inline <script>/style=
 // (e.g. the theme flash-prevention snippet). It still blocks external script
