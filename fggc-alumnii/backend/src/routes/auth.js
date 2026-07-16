@@ -38,7 +38,7 @@ router.post('/signup', [
     body('first_name').trim().isLength({ min: 1, max: 100 }).withMessage('First name is required'),
     body('last_name').trim().isLength({ min: 1, max: 100 }).withMessage('Last name is required'),
     body('email').isEmail().normalizeEmail().withMessage('Valid email address is required'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
     body('graduation_year')
         .isInt({ min: 1950, max: new Date().getFullYear() })
         .withMessage('Valid graduation year is required'),
@@ -180,8 +180,8 @@ router.post('/forgot-password', async (req, res) => {
 router.post('/reset-password', async (req, res) => {
     const { email, token, newPassword } = req.body;
 
-    if (!email || !token || typeof newPassword !== 'string' || newPassword.length < 6) {
-        return res.status(400).json({ message: 'A valid token and a password of at least 6 characters are required' });
+    if (!email || !token || typeof newPassword !== 'string' || newPassword.length < 8) {
+        return res.status(400).json({ message: 'A valid token and a password of at least 8 characters are required' });
     }
 
     try {
