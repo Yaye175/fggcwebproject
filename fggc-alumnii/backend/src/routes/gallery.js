@@ -54,22 +54,32 @@ router.get('/', async (req, res) => {
     }
 });
 
-// POST /gallery
+// POST /gallery — accepts one or many files. Files and captions are
+// index-aligned: captions[i] belongs to files[i].
+const MAX_GALLERY_BATCH = 20;
+
 router.post('/', authMiddleware, proAdminMiddleware, (req, res) => {
-    upload.single('media')(req, res, async (err) => {
+    upload.array('media', MAX_GALLERY_BATCH)(req, res, async (err) => {
         if (err) return res.status(400).json({ message: err.message });
 
-        const { caption } = req.body;
-        if (!req.file) return res.status(400).json({ message: 'Media file is required' });
+        const files = req.files || [];
+        if (files.length === 0) return res.status(400).json({ message: 'Media file is required' });
 
-        const filename = `/uploads/${req.file.filename}`;
+        // multer gives a string for one `captions` field, an array for several.
+        const rawCaptions = req.body.captions;
+        const captions = Array.isArray(rawCaptions)
+            ? rawCaptions
+            : (rawCaptions == null ? [] : [rawCaptions]);
 
         try {
-            const [result] = await pool.execute(
-                'INSERT INTO gallery (filename, caption) VALUES (?, ?)',
-                [filename, caption || '']
-            );
-            res.status(201).json({ message: 'Media added successfully', id: result.insertId });
+            for (let i = 0; i < files.length; i++) {
+                const filename = `/uploads/${files[i].filename}`;
+                await pool.execute(
+                    'INSERT INTO gallery (filename, caption) VALUES (?, ?)',
+                    [filename, captions[i] || '']
+                );
+            }
+            res.status(201).json({ message: 'Media added successfully', inserted: files.length });
         } catch(dbErr) {
             console.error(dbErr);
             res.status(500).json({ message: 'Server error uploading media' });
