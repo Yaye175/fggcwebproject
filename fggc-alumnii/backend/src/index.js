@@ -49,6 +49,12 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'", "'unsafe-inline'"],
+            // Helmet's defaults set script-src-attr 'none', which blocks ALL
+            // inline event-handler attributes (onclick, onchange, …) even when
+            // script-src allows 'unsafe-inline'. Our UI wires buttons that way
+            // (theme toggle on every page, the "Load Sudoku" widget, etc.), so
+            // permit inline handlers to match the existing script-src policy.
+            scriptSrcAttr: ["'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             imgSrc: ["'self'", "data:", "blob:"],
             mediaSrc: ["'self'", "data:", "blob:"],
