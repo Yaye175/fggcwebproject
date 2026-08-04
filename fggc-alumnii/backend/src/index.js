@@ -55,6 +55,10 @@ app.use(helmet({
             connectSrc: ["'self'"],
             objectSrc: ["'none'"],
             baseUri: ["'self'"],
+            // Allow the embeddable WebSudoku widget (loaded on demand by the
+            // "Load Sudoku" button on the homepage). Without this, frame-src
+            // falls back to default-src 'self' and the iframe is blocked.
+            frameSrc: ["'self'", "https://show.websudoku.com"],
             frameAncestors: ["'none'"],
             formAction: ["'self'"]
         }
