@@ -171,8 +171,10 @@
                     <form id="pro-gallery-form">
                         <div class="form-group">
                             <label>Images or Videos (Required)</label>
-                            <input type="file" id="gallery-media" accept="image/*,video/*" multiple required>
-                            <small style="color:var(--text-mid);">Select up to 20 files. Add a caption for each below.</small>
+                            <input type="file" id="gallery-media" accept="image/*,video/*,.heic,.heif" multiple required>
+                            <small style="color:var(--text-mid);">Select up to 20 files. Add a caption for each below.
+                                Photos are resized in your browser first, and each file is uploaded on its own — if one
+                                fails, the rest still go through.</small>
                         </div>
                         <div id="gallery-file-list" class="gallery-file-list"></div>
                         <button type="submit" class="btn btn-primary" style="width:100%;">Upload to Gallery</button>
@@ -322,12 +324,54 @@
         const MAX_GALLERY_FILES = 20;
         const galleryMediaInput = document.getElementById('gallery-media');
         const galleryFileList = document.getElementById('gallery-file-list');
-        let galleryObjectUrls = [];
+        let galleryRows = [];
 
         const clearGalleryPreviews = () => {
-            galleryObjectUrls.forEach(url => URL.revokeObjectURL(url));
-            galleryObjectUrls = [];
+            galleryRows.forEach(r => { if (r.objectUrl) URL.revokeObjectURL(r.objectUrl); });
+            galleryRows = [];
             galleryFileList.innerHTML = '';
+        };
+
+        // --- Prepare files in the browser ----------------------------------
+        // Phone photos are 3-8 MB each and iPhones shoot HEIC, which multer
+        // rejected and most browsers can't display anyway. Re-encoding to a
+        // reasonably sized JPEG here fixes the format and cuts a 20-file batch
+        // from tens of megabytes to a couple — the size and duration that was
+        // getting the upload dropped on mobile data.
+        const GALLERY_MAX_EDGE = 2400;
+        const GALLERY_JPEG_QUALITY = 0.85;
+        const GALLERY_SKIP_RESIZE_BELOW = 1.5 * 1024 * 1024;
+
+        const loadImage = (file) => new Promise((resolve, reject) => {
+            const url = URL.createObjectURL(file);
+            const img = new Image();
+            img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+            img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not decode image')); };
+            img.src = url;
+        });
+
+        const prepareGalleryFile = async (file) => {
+            if (!file.type.startsWith('image/') && !/\.(heic|heif)$/i.test(file.name)) return file; // videos as-is
+            const isHeic = /heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
+            if (!isHeic && file.size <= GALLERY_SKIP_RESIZE_BELOW) return file;
+            try {
+                const img = await loadImage(file);
+                const longEdge = Math.max(img.naturalWidth, img.naturalHeight);
+                const scale = Math.min(1, GALLERY_MAX_EDGE / longEdge);
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.round(img.naturalWidth * scale);
+                canvas.height = Math.round(img.naturalHeight * scale);
+                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', GALLERY_JPEG_QUALITY));
+                if (!blob) return file;
+                if (!isHeic && blob.size >= file.size) return file; // no gain — keep the original
+                return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+            } catch (err) {
+                // Non-Safari browsers can't decode HEIC. Send the original and
+                // let the server report it for that one file.
+                console.warn('Uploading', file.name, 'unchanged:', err.message);
+                return file;
+            }
         };
 
         const renderGalleryFileList = () => {
@@ -338,17 +382,16 @@
                 galleryMediaInput.value = '';
                 return;
             }
-            files.forEach((file, i) => {
+            files.forEach((file) => {
                 const row = document.createElement('div');
                 row.className = 'gallery-file-row';
                 row.style.cssText = 'display:flex;gap:.75rem;align-items:center;margin-bottom:.6rem;';
 
-                let thumb;
+                let thumb, objectUrl = null;
                 if (file.type.startsWith('image/')) {
-                    const url = URL.createObjectURL(file);
-                    galleryObjectUrls.push(url);
+                    objectUrl = URL.createObjectURL(file);
                     thumb = document.createElement('img');
-                    thumb.src = url;
+                    thumb.src = objectUrl;
                     thumb.alt = file.name;
                     thumb.style.cssText = 'width:48px;height:48px;object-fit:cover;border-radius:6px;flex:none;';
                 } else {
@@ -362,39 +405,134 @@
                 capInput.type = 'text';
                 capInput.placeholder = 'Caption for ' + file.name;
                 capInput.className = 'gallery-caption-input';
-                capInput.dataset.index = i;
-                capInput.style.cssText = 'flex:1;min-width:0;';
+                capInput.style.cssText = 'width:100%;min-width:0;';
+
+                const status = document.createElement('small');
+                status.style.cssText = 'display:none;color:var(--text-mid);';
+
+                const field = document.createElement('div');
+                field.style.cssText = 'flex:1;min-width:0;';
+                field.appendChild(capInput);
+                field.appendChild(status);
 
                 row.appendChild(thumb);
-                row.appendChild(capInput);
+                row.appendChild(field);
                 galleryFileList.appendChild(row);
+
+                galleryRows.push({
+                    file, row, capInput, objectUrl, uploaded: false,
+                    setStatus: (text, tone) => {
+                        status.textContent = text;
+                        status.style.display = 'block';
+                        status.style.color = tone === 'error' ? 'var(--danger)'
+                            : tone === 'ok' ? 'var(--success, #2e7d32)' : 'var(--text-mid)';
+                    }
+                });
             });
         };
 
         galleryMediaInput.addEventListener('change', renderGalleryFileList);
 
+        // One file per request. A whole batch in a single request meant any one
+        // rejected or slow file killed everything, and the browser reported it
+        // as a bare "Load failed" because the connection died mid-upload.
+        const uploadGalleryFile = async (file, caption) => {
+            const formData = new FormData();
+            formData.append('media', file);
+            formData.append('captions', caption);
+            const res = await fetch(API_URL + '/gallery', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token },
+                body: formData
+            });
+            let message = `Server error (${res.status})`;
+            if ((res.headers.get('content-type') || '').includes('application/json')) {
+                const data = await res.json().catch(() => ({}));
+                if (data.message) message = data.message;
+            }
+            return { ok: res.ok, message };
+        };
+
+        const uploadGalleryFileWithRetry = async (file, caption) => {
+            for (let attempt = 1; attempt <= 2; attempt++) {
+                try {
+                    return await uploadGalleryFile(file, caption);
+                } catch (err) {
+                    // A dropped connection on mobile data is usually transient.
+                    if (attempt === 2) return { ok: false, message: 'Network error — ' + err.message };
+                }
+            }
+        };
+
+        // Drop the rows that made it and leave the failures selected, so a
+        // retry doesn't upload the successful ones a second time.
+        const keepFailedGalleryFilesSelected = () => {
+            const remaining = galleryRows.filter(r => !r.uploaded);
+            galleryRows.filter(r => r.uploaded).forEach(r => {
+                if (r.objectUrl) URL.revokeObjectURL(r.objectUrl);
+                r.row.remove();
+            });
+            galleryRows = remaining;
+            try {
+                const dt = new DataTransfer();
+                remaining.forEach(r => dt.items.add(r.file));
+                galleryMediaInput.files = dt.files;
+            } catch (err) {
+                galleryMediaInput.value = ''; // older browsers: re-pick the failed files
+            }
+        };
+
         document.getElementById('pro-gallery-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const files = Array.from(galleryMediaInput.files);
-            if (files.length === 0) { alert('Please select at least one file.'); return; }
-            if (files.length > MAX_GALLERY_FILES) {
+            if (galleryRows.length === 0) { alert('Please select at least one file.'); return; }
+            if (galleryRows.length > MAX_GALLERY_FILES) {
                 alert(`Please select no more than ${MAX_GALLERY_FILES} files at a time.`);
                 return;
             }
-            await withLoadingBtn(e.target, () => {
-                const formData = new FormData();
-                // Append file then its caption per index so files and captions
-                // stay index-aligned on the server.
-                files.forEach((file, i) => {
-                    const cap = galleryFileList.querySelector(`.gallery-caption-input[data-index="${i}"]`);
-                    formData.append('media', file);
-                    formData.append('captions', cap ? cap.value : '');
-                });
-                return handleUpload('/gallery', formData);
-            });
+
+            const form = e.target;
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            const total = galleryRows.length;
+            const failures = [];
+            let uploaded = 0;
+
+            btn.disabled = true;
+            try {
+                for (let i = 0; i < galleryRows.length; i++) {
+                    const item = galleryRows[i];
+                    btn.textContent = `Uploading ${i + 1} of ${total}…`;
+                    item.setStatus('Preparing…');
+                    const prepared = await prepareGalleryFile(item.file);
+                    item.setStatus('Uploading…');
+                    const result = await uploadGalleryFileWithRetry(prepared, item.capInput.value);
+                    if (result.ok) {
+                        item.uploaded = true;
+                        uploaded++;
+                        item.setStatus('Uploaded', 'ok');
+                    } else {
+                        failures.push(`${item.file.name}: ${result.message}`);
+                        item.setStatus(result.message, 'error');
+                    }
+                }
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+
+            if (failures.length === 0) {
+                alert(`Successfully uploaded ${uploaded} file${uploaded === 1 ? '' : 's'}!`);
+                form.reset();
+                galleryMediaInput.value = '';
+                clearGalleryPreviews();
+            } else {
+                keepFailedGalleryFilesSelected();
+                alert(`Uploaded ${uploaded} of ${total}. ${failures.length} failed:\n\n` +
+                    failures.join('\n') + '\n\nThe failed files are still selected — press Upload to try again.');
+            }
         });
 
-        // withLoadingBtn calls form.reset() on success — clear previews too.
+        // Keep previews in sync if the form is reset by any other path.
         document.getElementById('pro-gallery-form').addEventListener('reset', clearGalleryPreviews);
     </script>
     <!-- Mobile bottom navigation -->

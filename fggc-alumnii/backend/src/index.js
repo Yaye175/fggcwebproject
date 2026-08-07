@@ -143,6 +143,14 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+// Node closes a request that takes longer than 5 minutes (requestTimeout) and
+// only allows 60s to finish sending headers. Media uploaded from a phone on
+// mobile data can legitimately take longer, and a timeout there looks like a
+// generic network failure in the browser. Give uploads room.
+server.requestTimeout = 15 * 60 * 1000;
+server.headersTimeout = 15 * 60 * 1000 + 5000; // must exceed requestTimeout
+server.keepAliveTimeout = 65 * 1000;
