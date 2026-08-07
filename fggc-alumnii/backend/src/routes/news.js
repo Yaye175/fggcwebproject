@@ -5,6 +5,7 @@ const proAdminMiddleware = require('../middleware/proAdminMiddleware');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { respondAfterDraining, uniqueFilename } = require('../respondAfterDraining');
 
 const router = express.Router();
 
@@ -14,17 +15,24 @@ fs.mkdirSync(uploadsDir, { recursive: true });
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, uploadsDir),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/[^a-zA-Z0-9.]/g, '_'))
+    filename: (req, file, cb) => cb(null, uniqueFilename(file.originalname))
 });
 
 const ALLOWED_NEWS_VIDEO = /^(mp4|webm|mov|m4v|ogg)$/i;
+
+// Strips the stored-name prefix to recover what the admin uploaded. Matches
+// both the current `<ts>-<random>-name` form and the older `<ts>-name` rows
+// already in the database.
+const STORED_NAME_PREFIX = /^\d+-(?:[0-9a-f]{12}-)?/;
 
 // Accept both image and document fields
 const upload = multer({
     storage,
     limits: { fileSize: 200 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
-        const allowedImage = /^(jpeg|jpg|png|gif|webp)$/i;
+        // heic/heif: what iPhones shoot by default. The dashboard re-encodes
+        // them to JPEG first, so this only catches ones that slip through raw.
+        const allowedImage = /^(jpeg|jpg|png|gif|webp|heic|heif)$/i;
         const allowedDoc   = /^(pdf|doc|docx|txt)$/i;
         const ext = path.extname(file.originalname).slice(1);
         if (file.fieldname === 'image' && (allowedImage.test(ext) || ALLOWED_NEWS_VIDEO.test(ext))) return cb(null, true);
@@ -61,7 +69,7 @@ router.get('/', async (req, res) => {
             enrichMediaField(result);
             if (item.document) {
                 result.documentUrl = item.document;
-                result.documentName = path.basename(item.document).replace(/^\d+-/, '');
+                result.documentName = path.basename(item.document).replace(STORED_NAME_PREFIX, '');
             }
             return result;
         });
@@ -95,7 +103,7 @@ router.use(proAdminMiddleware);
 // POST /news
 router.post('/', (req, res, next) => {
     upload(req, res, async (err) => {
-        if (err) return res.status(400).json({ message: err.message });
+        if (err) return respondAfterDraining(req, res, 400, { message: err.message });
 
         const { title, content, type } = req.body;
         const validTypes = ['news', 'minutes', 'story'];

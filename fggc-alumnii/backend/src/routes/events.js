@@ -4,20 +4,22 @@ const authMiddleware = require('../middleware/authMiddleware');
 const proAdminMiddleware = require('../middleware/proAdminMiddleware');
 const multer = require('multer');
 const path = require('path');
+const { respondAfterDraining, uniqueFilename } = require('../respondAfterDraining');
 const router = express.Router();
 
 const uploadsDir = require('../uploadsDir');
 require('fs').mkdirSync(uploadsDir, { recursive: true });
 
-const ALLOWED_EVENTS = /^(jpg|jpeg|png|gif|webp|mp4|webm|mov|m4v|ogg)$/i;
+// heic/heif included because that is what iPhones shoot by default. The
+// dashboard re-encodes them to JPEG before upload; accepting them here means a
+// file that slips through raw is stored rather than aborting the request.
+const ALLOWED_EVENTS = /^(jpg|jpeg|png|gif|webp|heic|heif|mp4|webm|mov|m4v|ogg)$/i;
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, uploadsDir);
     },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname.replace(/[^a-zA-Z0-9.]/g, '_'));
-    }
+    filename: (req, file, cb) => cb(null, uniqueFilename(file.originalname))
 });
 
 const upload = multer({
@@ -26,7 +28,7 @@ const upload = multer({
     fileFilter: (req, file, cb) => {
         const ext = path.extname(file.originalname).slice(1);
         if (ALLOWED_EVENTS.test(ext)) return cb(null, true);
-        cb(new Error(`File type .${ext} not allowed. Use jpg, png, gif, webp, mp4, webm, mov, m4v, or ogg.`));
+        cb(new Error(`File type .${ext} not allowed. Use jpg, png, gif, webp, heic, mp4, webm, mov, m4v, or ogg.`));
     }
 });
 
@@ -44,7 +46,7 @@ router.get('/', async (req, res) => {
 // POST /events
 router.post('/', authMiddleware, proAdminMiddleware, (req, res) => {
     upload.single('image')(req, res, async (err) => {
-        if (err) return res.status(400).json({ message: err.message });
+        if (err) return respondAfterDraining(req, res, 400, { message: err.message });
 
         const { title, description, event_date, location } = req.body;
         const imagePath = req.file ? `/uploads/${req.file.filename}` : null;

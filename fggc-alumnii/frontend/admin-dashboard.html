@@ -126,7 +126,7 @@
                         </div>
                         <div class="form-group">
                             <label>Image or Video (Optional)</label>
-                            <input type="file" id="news-image" accept="image/*,video/*">
+                            <input type="file" id="news-image" accept="image/*,video/*,.heic,.heif">
                         </div>
                         <div class="form-group">
                             <label>Document (Optional — PDF, DOC, DOCX, TXT)</label>
@@ -159,7 +159,7 @@
                         </div>
                         <div class="form-group">
                             <label>Image or Video (Optional)</label>
-                            <input type="file" id="event-media" accept="image/*,video/*">
+                            <input type="file" id="event-media" accept="image/*,video/*,.heic,.heif">
                         </div>
                         <button type="submit" class="btn btn-primary" style="width:100%;">Create Event</button>
                     </form>
@@ -292,15 +292,57 @@
             }
         };
 
+        // --- Prepare images in the browser before uploading -----------------
+        // Phone photos are 3-8 MB each and iPhones shoot HEIC, which most
+        // browsers can't display. Re-encoding to a reasonably sized JPEG fixes
+        // the format and cuts the payload by an order of magnitude — the size
+        // and duration that was getting uploads dropped on mobile data.
+        // Videos, documents and already-small images pass through untouched.
+        const MEDIA_MAX_EDGE = 2400;
+        const MEDIA_JPEG_QUALITY = 0.85;
+        const MEDIA_SKIP_RESIZE_BELOW = 1.5 * 1024 * 1024;
+
+        const loadImage = (file) => new Promise((resolve, reject) => {
+            const url = URL.createObjectURL(file);
+            const img = new Image();
+            img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+            img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not decode image')); };
+            img.src = url;
+        });
+
+        const prepareMediaFile = async (file) => {
+            const isHeic = /heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
+            if (!file.type.startsWith('image/') && !isHeic) return file;
+            if (!isHeic && file.size <= MEDIA_SKIP_RESIZE_BELOW) return file;
+            try {
+                const img = await loadImage(file);
+                const longEdge = Math.max(img.naturalWidth, img.naturalHeight);
+                const scale = Math.min(1, MEDIA_MAX_EDGE / longEdge);
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.round(img.naturalWidth * scale);
+                canvas.height = Math.round(img.naturalHeight * scale);
+                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', MEDIA_JPEG_QUALITY));
+                if (!blob) return file;
+                if (!isHeic && blob.size >= file.size) return file; // no gain — keep the original
+                return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+            } catch (err) {
+                // Non-Safari browsers can't decode HEIC. Send the original and
+                // let the server report it for that one file.
+                console.warn('Uploading', file.name, 'unchanged:', err.message);
+                return file;
+            }
+        };
+
         document.getElementById('pro-news-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await withLoadingBtn(e.target, () => {
+            await withLoadingBtn(e.target, async () => {
                 const formData = new FormData();
                 formData.append('type', document.getElementById('news-type').value);
                 formData.append('title', document.getElementById('news-title').value);
                 formData.append('content', document.getElementById('news-content').value);
                 const img = document.getElementById('news-image').files[0];
-                if (img) formData.append('image', img);
+                if (img) formData.append('image', await prepareMediaFile(img));
                 const doc = document.getElementById('news-document').files[0];
                 if (doc) formData.append('document', doc);
                 return handleUpload('/news', formData);
@@ -309,14 +351,14 @@
 
         document.getElementById('pro-event-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await withLoadingBtn(e.target, () => {
+            await withLoadingBtn(e.target, async () => {
                 const formData = new FormData();
                 formData.append('title', document.getElementById('event-title').value);
                 formData.append('event_date', document.getElementById('event-date').value);
                 formData.append('location', document.getElementById('event-location').value);
                 formData.append('description', document.getElementById('event-description').value);
                 const media = document.getElementById('event-media').files[0];
-                if (media) formData.append('image', media);
+                if (media) formData.append('image', await prepareMediaFile(media));
                 return handleUpload('/events', formData);
             });
         });
@@ -330,48 +372,6 @@
             galleryRows.forEach(r => { if (r.objectUrl) URL.revokeObjectURL(r.objectUrl); });
             galleryRows = [];
             galleryFileList.innerHTML = '';
-        };
-
-        // --- Prepare files in the browser ----------------------------------
-        // Phone photos are 3-8 MB each and iPhones shoot HEIC, which multer
-        // rejected and most browsers can't display anyway. Re-encoding to a
-        // reasonably sized JPEG here fixes the format and cuts a 20-file batch
-        // from tens of megabytes to a couple — the size and duration that was
-        // getting the upload dropped on mobile data.
-        const GALLERY_MAX_EDGE = 2400;
-        const GALLERY_JPEG_QUALITY = 0.85;
-        const GALLERY_SKIP_RESIZE_BELOW = 1.5 * 1024 * 1024;
-
-        const loadImage = (file) => new Promise((resolve, reject) => {
-            const url = URL.createObjectURL(file);
-            const img = new Image();
-            img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
-            img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not decode image')); };
-            img.src = url;
-        });
-
-        const prepareGalleryFile = async (file) => {
-            if (!file.type.startsWith('image/') && !/\.(heic|heif)$/i.test(file.name)) return file; // videos as-is
-            const isHeic = /heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
-            if (!isHeic && file.size <= GALLERY_SKIP_RESIZE_BELOW) return file;
-            try {
-                const img = await loadImage(file);
-                const longEdge = Math.max(img.naturalWidth, img.naturalHeight);
-                const scale = Math.min(1, GALLERY_MAX_EDGE / longEdge);
-                const canvas = document.createElement('canvas');
-                canvas.width = Math.round(img.naturalWidth * scale);
-                canvas.height = Math.round(img.naturalHeight * scale);
-                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-                const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', GALLERY_JPEG_QUALITY));
-                if (!blob) return file;
-                if (!isHeic && blob.size >= file.size) return file; // no gain — keep the original
-                return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
-            } catch (err) {
-                // Non-Safari browsers can't decode HEIC. Send the original and
-                // let the server report it for that one file.
-                console.warn('Uploading', file.name, 'unchanged:', err.message);
-                return file;
-            }
         };
 
         const renderGalleryFileList = () => {
@@ -503,7 +503,7 @@
                     const item = galleryRows[i];
                     btn.textContent = `Uploading ${i + 1} of ${total}…`;
                     item.setStatus('Preparing…');
-                    const prepared = await prepareGalleryFile(item.file);
+                    const prepared = await prepareMediaFile(item.file);
                     item.setStatus('Uploading…');
                     const result = await uploadGalleryFileWithRetry(prepared, item.capInput.value);
                     if (result.ok) {

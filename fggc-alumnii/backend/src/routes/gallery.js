@@ -5,7 +5,7 @@ const proAdminMiddleware = require('../middleware/proAdminMiddleware');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const crypto = require('crypto');
+const { respondAfterDraining, uniqueFilename } = require('../respondAfterDraining');
 const router = express.Router();
 
 const uploadsDir = require('../uploadsDir');
@@ -21,13 +21,7 @@ const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, uploadsDir);
     },
-    filename: (req, file, cb) => {
-        // iOS names every photo picked from the library "image.jpg", and files
-        // in one batch land in the same millisecond — Date.now() alone collides
-        // and the uploads overwrite each other. Add random bytes.
-        const suffix = crypto.randomBytes(6).toString('hex');
-        cb(null, `${Date.now()}-${suffix}-${file.originalname.replace(/[^a-zA-Z0-9.]/g, '_')}`);
-    }
+    filename: (req, file, cb) => cb(null, uniqueFilename(file.originalname))
 });
 
 const upload = multer({
@@ -66,22 +60,6 @@ router.get('/', async (req, res) => {
 // POST /gallery — accepts one or many files. Files and captions are
 // index-aligned: captions[i] belongs to files[i].
 const MAX_GALLERY_BATCH = 20;
-
-// When multer aborts (bad type, file too big) it stops reading the socket while
-// the client is often still streaming megabytes. Replying right then resets the
-// connection, and the browser reports a bare network failure — on iOS Safari,
-// "TypeError: Load failed" — instead of the reason. Drain what's left first so
-// the JSON message actually reaches the client.
-const respondAfterDraining = (req, res, status, body) => {
-    const send = () => { if (!res.headersSent) res.status(status).json(body); };
-    if (req.readableEnded || req.complete) return send();
-
-    const timer = setTimeout(send, 5000); // don't wait forever on a stalled upload
-    req.on('end', () => { clearTimeout(timer); send(); });
-    req.on('error', () => { clearTimeout(timer); send(); });
-    req.unpipe();
-    req.resume();
-};
 
 router.post('/', authMiddleware, proAdminMiddleware, (req, res) => {
     upload.array('media', MAX_GALLERY_BATCH)(req, res, async (err) => {
