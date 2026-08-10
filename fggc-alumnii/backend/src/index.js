@@ -32,8 +32,19 @@ app.set('trust proxy', 1);
 // social scrapers converge on a single canonical origin. Guarded to the exact
 // production apex, so localhost, Railway-internal hosts and health checks are
 // left untouched.
+//
+// IMPORTANT: only redirect page/asset navigations, NOT API or upload requests.
+// A 301 from the apex to the www origin is *cross-origin* for fetch(): it trips
+// CSP connect-src 'self', fails CORS, and the browser strips the Authorization
+// header on the redirected request. When a page is opened on the bare apex
+// (e.g. a WhatsApp link), that made every authenticated call — including gallery
+// uploads — fail with "Load failed". Serving the API directly on either origin
+// keeps those calls same-origin and working; pages still canonicalize to www.
+const API_PREFIXES = ['/auth', '/events', '/payments', '/admin', '/gallery', '/news', '/uploads', '/health'];
+const isApiPath = (p) => API_PREFIXES.some(prefix => p === prefix || p.startsWith(prefix + '/'));
+
 app.use((req, res, next) => {
-    if (req.headers.host === 'fggcgbokoogaabj.com') {
+    if (req.headers.host === 'fggcgbokoogaabj.com' && !isApiPath(req.path)) {
         return res.redirect(301, `https://www.fggcgbokoogaabj.com${req.originalUrl}`);
     }
     next();
