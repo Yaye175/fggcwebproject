@@ -105,9 +105,18 @@ const apiLimiter = rateLimit({
 const path = require('path');
 // Serve the frontend static files
 app.use(express.static(path.join(__dirname, '../../frontend')));
+// Documents (meeting minutes etc.) are members-only and must NOT be reachable
+// through this public route by guessing the filename. They are served instead
+// by the authenticated GET /news/document/:id endpoint. Images and videos stay
+// public so the gallery, news and event media render for everyone.
+const MEMBERS_ONLY_EXT = /\.(pdf|docx?|txt)$/i;
+
 // Serve uploaded files with explicit cross-origin headers
 app.get('/uploads/:filename', (req, res) => {
     const safeName = path.basename(req.params.filename); // prevent path traversal
+    if (MEMBERS_ONLY_EXT.test(safeName)) {
+        return res.status(403).json({ message: 'This document is available to logged-in members only.' });
+    }
     const filePath = path.join(require('./uploadsDir'), safeName);
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
     res.setHeader('Access-Control-Allow-Origin', allowedOrigin);

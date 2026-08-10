@@ -12,6 +12,16 @@ const router = express.Router();
 const uploadsDir = require('../uploadsDir');
 fs.mkdirSync(uploadsDir, { recursive: true });
 
+// Best-effort removal of a file referenced as "/uploads/<name>". Never throws
+// (missing file, etc.) so a record delete still succeeds even if the file is
+// already gone.
+function safeUnlink(storedPath) {
+    if (!storedPath) return;
+    try {
+        fs.unlinkSync(path.join(uploadsDir, path.basename(storedPath)));
+    } catch (e) { /* file already gone — ignore */ }
+}
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, uploadsDir),
     filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/[^a-zA-Z0-9.]/g, '_'))
@@ -88,6 +98,28 @@ router.get('/latest-story', async (req, res) => {
     }
 });
 
+// GET /news/document/:id — members-only download of an attached document.
+// Documents (meeting minutes etc.) are deliberately NOT served by the public
+// /uploads route, so this authenticated endpoint is the only way to fetch one.
+// Any logged-in member may download; no pro-admin role required.
+router.get('/document/:id', authMiddleware, async (req, res) => {
+    try {
+        const [rows] = await pool.execute('SELECT document FROM news WHERE id = ?', [req.params.id]);
+        if (rows.length === 0 || !rows[0].document) {
+            return res.status(404).json({ message: 'Document not found' });
+        }
+        const safeName = path.basename(rows[0].document); // stored as /uploads/<name>
+        const filePath = path.join(uploadsDir, safeName);
+        const downloadName = safeName.replace(/^\d+-/, ''); // strip the timestamp prefix
+        res.download(filePath, downloadName, (err) => {
+            if (err && !res.headersSent) res.status(404).json({ message: 'Document not found' });
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error fetching document' });
+    }
+});
+
 // Apply auth + proAdmin to write routes
 router.use(authMiddleware);
 router.use(proAdminMiddleware);
@@ -119,6 +151,23 @@ router.post('/', (req, res, next) => {
             res.status(500).json({ message: 'Server error creating news' });
         }
     });
+});
+
+// DELETE /news/:id — remove a news item and its uploaded image/document files.
+router.delete('/:id', async (req, res) => {
+    try {
+        const [rows] = await pool.execute('SELECT image, document FROM news WHERE id = ?', [req.params.id]);
+        if (rows.length === 0) return res.status(404).json({ message: 'News item not found' });
+
+        await pool.execute('DELETE FROM news WHERE id = ?', [req.params.id]);
+        safeUnlink(rows[0].image);
+        safeUnlink(rows[0].document);
+
+        res.json({ message: 'News item deleted' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error deleting news' });
+    }
 });
 
 module.exports = router;

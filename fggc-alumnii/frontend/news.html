@@ -95,19 +95,66 @@
                                 <div class="news-date">${new Date(item.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
                                 <p>${escapeHtml(item.content).replace(/\n/g, '<br>')}</p>
                                 ${item.documentUrl ? `
-                                <a href="${API_URL}${item.documentUrl}"
-                                   download="${escapeHtml(item.documentName || 'document')}"
-                                   class="btn btn-secondary"
-                                   style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.75rem;font-size:0.82rem;">
+                                <button type="button"
+                                   class="btn btn-secondary news-doc-btn"
+                                   data-id="${item.id}"
+                                   data-name="${escapeHtml(item.documentName || 'document')}"
+                                   style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.75rem;font-size:0.82rem;cursor:pointer;">
                                     &#128196; Download ${escapeHtml(item.documentName || 'document')}
-                                </a>` : ''}
+                                </button>` : ''}
                             </div>
                         </div>
                     </div>
                 `).join('');
+
+                    // Documents (minutes etc.) are members-only. They aren't
+                    // served by the public /uploads route, so download them via
+                    // an authenticated fetch that carries the login token.
+                    container.querySelectorAll('.news-doc-btn').forEach(btn => {
+                        btn.addEventListener('click', () => downloadDocument(btn));
+                    });
                 } catch (e) {
                     console.error(e);
                     container.innerHTML = '<p>Failed to load data. Please try again later.</p>';
+                }
+            };
+
+            const downloadDocument = async (btn) => {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Meeting minutes and documents are for members only. Please log in to download.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                const id = btn.dataset.id;
+                const name = btn.dataset.name || 'document';
+                const originalHtml = btn.innerHTML;
+                btn.disabled = true;
+                btn.textContent = 'Downloading…';
+                try {
+                    const res = await fetch(`${API_URL}/news/document/${id}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.status === 401 || res.status === 403) {
+                        alert('Please log in as a member to download documents.');
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    if (!res.ok) throw new Error('Download failed');
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = name;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                } catch (err) {
+                    alert('Sorry, the download failed. Please try again.');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
                 }
             };
 

@@ -10,6 +10,14 @@ const router = express.Router();
 const uploadsDir = require('../uploadsDir');
 require('fs').mkdirSync(uploadsDir, { recursive: true });
 
+// Best-effort removal of a file referenced as "/uploads/<name>". Never throws.
+function safeUnlink(storedPath) {
+    if (!storedPath) return;
+    try {
+        fs.unlinkSync(path.join(uploadsDir, path.basename(storedPath)));
+    } catch (e) { /* file already gone — ignore */ }
+}
+
 const ALLOWED_GALLERY = /^(jpg|jpeg|png|gif|webp|mp4|webm|mov|m4v|ogg)$/i;
 
 const storage = multer.diskStorage({
@@ -85,6 +93,22 @@ router.post('/', authMiddleware, proAdminMiddleware, (req, res) => {
             res.status(500).json({ message: 'Server error uploading media' });
         }
     });
+});
+
+// DELETE /gallery/:id — remove a gallery item and its uploaded file.
+router.delete('/:id', authMiddleware, proAdminMiddleware, async (req, res) => {
+    try {
+        const [rows] = await pool.execute('SELECT filename FROM gallery WHERE id = ?', [req.params.id]);
+        if (rows.length === 0) return res.status(404).json({ message: 'Media not found' });
+
+        await pool.execute('DELETE FROM gallery WHERE id = ?', [req.params.id]);
+        safeUnlink(rows[0].filename);
+
+        res.json({ message: 'Media deleted' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error deleting media' });
+    }
 });
 
 module.exports = router;

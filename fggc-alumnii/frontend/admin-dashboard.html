@@ -41,6 +41,7 @@
             style="display:flex;flex-wrap:wrap;gap:0.65rem;margin-bottom:2rem;border-bottom:1px solid var(--border-color);padding-bottom:1rem;">
             <button class="btn btn-primary" id="tab-users-btn">User Management</button>
             <button class="btn btn-secondary" id="tab-pro-btn">PRO Admin Tools</button>
+            <button class="btn btn-secondary" id="tab-manage-btn">Manage Content</button>
             <button class="btn btn-logout" style="margin-left:auto;" onclick="logout()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 Log Out
@@ -180,6 +181,28 @@
                 </div>
             </div>
         </section>
+
+        <!-- ═══ TAB: MANAGE CONTENT ═══ -->
+        <section id="tab-manage" style="display:none;">
+            <h1 style="font-size:1.6rem;margin-bottom:0.25rem;">Manage Content</h1>
+            <p style="color:var(--text-mid);margin-bottom:1.75rem;">Review and delete existing news, minutes, stories,
+                events, and gallery media. Deleting also removes the uploaded file.</p>
+
+            <div style="display:grid;gap:1.5rem;">
+                <div class="glass-card" style="padding:1.75rem;">
+                    <h3 style="margin-bottom:1rem;">News, Minutes &amp; Stories</h3>
+                    <div id="manage-news-list"><p style="color:var(--text-mid);">Loading&hellip;</p></div>
+                </div>
+                <div class="glass-card" style="padding:1.75rem;">
+                    <h3 style="margin-bottom:1rem;">Events</h3>
+                    <div id="manage-events-list"><p style="color:var(--text-mid);">Loading&hellip;</p></div>
+                </div>
+                <div class="glass-card" style="padding:1.75rem;">
+                    <h3 style="margin-bottom:1rem;">Gallery Media</h3>
+                    <div id="manage-gallery-list"><p style="color:var(--text-mid);">Loading&hellip;</p></div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Payment Modal — all IDs preserved -->
@@ -225,8 +248,8 @@
     <script src="js/admin-dashboard.js?v=2"></script>
     <script src="js/animations.js"></script>
     <script>
-        // Tab switching logic — preserved exactly
-        const tabs = ['users', 'pro'];
+        // Tab switching logic
+        const tabs = ['users', 'pro', 'manage'];
         tabs.forEach(tab => {
             document.getElementById(`tab-${tab}-btn`).addEventListener('click', (e) => {
                 tabs.forEach(t => {
@@ -235,6 +258,7 @@
                 });
                 document.getElementById(`tab-${tab}`).style.display = 'block';
                 e.target.classList.replace('btn-secondary', 'btn-primary');
+                if (tab === 'manage') loadManageLists();
             });
         });
 
@@ -401,6 +425,76 @@
 
         // withLoadingBtn calls form.reset() on success — clear previews too.
         document.getElementById('pro-gallery-form').addEventListener('reset', clearGalleryPreviews);
+
+        // ===== Manage Content: list existing items with delete buttons =====
+        const deleteRow = async (endpoint, label, rowEl) => {
+            if (!confirm(`Delete this ${label}? This also removes the uploaded file and cannot be undone.`)) return;
+            try {
+                await api.delete(endpoint);
+                rowEl.remove();
+            } catch (err) {
+                alert('Delete failed: ' + err.message);
+            }
+        };
+
+        const manageRow = (title, meta, endpoint, label) => {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex;gap:.75rem;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--border-color);';
+            const info = document.createElement('div');
+            info.style.cssText = 'min-width:0;';
+            info.innerHTML = `<div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(title)}</div>`
+                + (meta ? `<div style="font-size:.78rem;color:var(--text-mid);">${escapeHtml(meta)}</div>` : '');
+            const del = document.createElement('button');
+            del.type = 'button';
+            del.className = 'btn';
+            del.textContent = 'Delete';
+            del.style.cssText = 'background:var(--danger-red);color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;flex:none;';
+            del.addEventListener('click', () => deleteRow(endpoint, label, row));
+            row.appendChild(info);
+            row.appendChild(del);
+            return row;
+        };
+
+        const renderManageList = (containerId, items, mapFn, emptyMsg) => {
+            const c = document.getElementById(containerId);
+            c.innerHTML = '';
+            if (!items || items.length === 0) {
+                c.innerHTML = `<p style="color:var(--text-mid);">${emptyMsg}</p>`;
+                return;
+            }
+            items.forEach(item => c.appendChild(mapFn(item)));
+        };
+
+        // Reloads every time the Manage tab is opened so lists stay fresh after
+        // creating or deleting content.
+        const loadManageLists = async () => {
+            try {
+                const types = ['news', 'minutes', 'story'];
+                const results = await Promise.all(types.map(t => api.get(`/news?type=${t}`).catch(() => [])));
+                const allNews = results.flat();
+                renderManageList('manage-news-list', allNews,
+                    item => manageRow(item.title, `${item.type} · ${new Date(item.created_at).toLocaleDateString()}`, `/news/${item.id}`, 'item'),
+                    'No news items yet.');
+            } catch (e) {
+                document.getElementById('manage-news-list').innerHTML = '<p style="color:var(--danger-red);">Failed to load news.</p>';
+            }
+            try {
+                const events = await api.get('/events');
+                renderManageList('manage-events-list', events,
+                    item => manageRow(item.title, item.event_date ? new Date(item.event_date).toLocaleString() : '', `/events/${item.id}`, 'event'),
+                    'No events yet.');
+            } catch (e) {
+                document.getElementById('manage-events-list').innerHTML = '<p style="color:var(--danger-red);">Failed to load events.</p>';
+            }
+            try {
+                const media = await api.get('/gallery');
+                renderManageList('manage-gallery-list', media,
+                    item => manageRow(item.caption || '(no caption)', item.type, `/gallery/${item.id}`, 'media item'),
+                    'No gallery media yet.');
+            } catch (e) {
+                document.getElementById('manage-gallery-list').innerHTML = '<p style="color:var(--danger-red);">Failed to load gallery.</p>';
+            }
+        };
     </script>
     <!-- Mobile bottom navigation -->
     <nav class="mobile-bottom-nav" aria-label="Mobile navigation">

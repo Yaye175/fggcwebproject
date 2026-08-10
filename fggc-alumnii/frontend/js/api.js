@@ -69,5 +69,15 @@ const api = {
             body: JSON.stringify(payload)
         });
         return api.handleResponse(response);
+    },
+
+    // DELETE request
+    delete: async (endpoint) => {
+        const response = await fetch(`${API_URL}${endpoint}`, {
+            method: 'DELETE',
+            headers: api.getHeaders(),
+            credentials: 'same-origin'
+        });
+        return api.handleResponse(response);
     }
 };

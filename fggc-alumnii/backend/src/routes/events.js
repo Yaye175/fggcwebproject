@@ -4,10 +4,19 @@ const authMiddleware = require('../middleware/authMiddleware');
 const proAdminMiddleware = require('../middleware/proAdminMiddleware');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const router = express.Router();
 
 const uploadsDir = require('../uploadsDir');
-require('fs').mkdirSync(uploadsDir, { recursive: true });
+fs.mkdirSync(uploadsDir, { recursive: true });
+
+// Best-effort removal of a file referenced as "/uploads/<name>". Never throws.
+function safeUnlink(storedPath) {
+    if (!storedPath) return;
+    try {
+        fs.unlinkSync(path.join(uploadsDir, path.basename(storedPath)));
+    } catch (e) { /* file already gone — ignore */ }
+}
 
 const ALLOWED_EVENTS = /^(jpg|jpeg|png|gif|webp|mp4|webm|mov|m4v|ogg)$/i;
 
@@ -62,6 +71,22 @@ router.post('/', authMiddleware, proAdminMiddleware, (req, res) => {
             res.status(500).json({ message: 'Server error adding event' });
         }
     });
+});
+
+// DELETE /events/:id — remove an event and its uploaded image.
+router.delete('/:id', authMiddleware, proAdminMiddleware, async (req, res) => {
+    try {
+        const [rows] = await pool.execute('SELECT image FROM events WHERE id = ?', [req.params.id]);
+        if (rows.length === 0) return res.status(404).json({ message: 'Event not found' });
+
+        await pool.execute('DELETE FROM events WHERE id = ?', [req.params.id]);
+        safeUnlink(rows[0].image);
+
+        res.json({ message: 'Event deleted' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error deleting event' });
+    }
 });
 
 module.exports = router;
