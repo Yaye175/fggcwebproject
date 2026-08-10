@@ -3,6 +3,17 @@ const cron = require('node-cron');
 const nodemailer = require('nodemailer');
 const pool = require('../db');
 
+// Escape user-controlled values (e.g. first_name) before interpolating them
+// into the HTML email body, so a name containing markup can't inject HTML.
+function escapeHtml(value) {
+    return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // Connect to real Gmail SMTP server using App Passwords
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -100,7 +111,7 @@ async function sendReminders(targetUserId = null) {
                     to: user.email,
                     subject: `Your FGGC alumni dues for ${currentYear} are overdue`,
                     text: `Hi ${user.first_name},\n\nThis is a reminder that your FGGC Alumni Association dues for ${currentYear} are now overdue. Whenever you have a moment, please bring your account up to date. ${loginLineText}\n\nThank you for being part of the FGGC alumni community.${footerText}`,
-                    html: `<p>Hi ${user.first_name},</p><p>This is a reminder that your FGGC Alumni Association dues for ${currentYear} are now <b>overdue</b>. Whenever you have a moment, please bring your account up to date.</p>${loginLineHtml}<p>Thank you for being part of the FGGC alumni community.</p>${footerHtml}`
+                    html: `<p>Hi ${escapeHtml(user.first_name)},</p><p>This is a reminder that your FGGC Alumni Association dues for ${currentYear} are now <b>overdue</b>. Whenever you have a moment, please bring your account up to date.</p>${loginLineHtml}<p>Thank you for being part of the FGGC alumni community.</p>${footerHtml}`
                 };
             } else {
                 message = {
@@ -109,7 +120,7 @@ async function sendReminders(targetUserId = null) {
                     to: user.email,
                     subject: `A reminder about your FGGC alumni dues for ${currentYear}`,
                     text: `Hi ${user.first_name},\n\nThis is a friendly reminder that your FGGC Alumni Association dues for ${currentYear} are still pending. When you have a chance, please complete your payment. ${loginLineText}\n\nThank you for being part of the FGGC alumni community.${footerText}`,
-                    html: `<p>Hi ${user.first_name},</p><p>This is a friendly reminder that your FGGC Alumni Association dues for ${currentYear} are still pending. When you have a chance, please complete your payment.</p>${loginLineHtml}<p>Thank you for being part of the FGGC alumni community.</p>${footerHtml}`
+                    html: `<p>Hi ${escapeHtml(user.first_name)},</p><p>This is a friendly reminder that your FGGC Alumni Association dues for ${currentYear} are still pending. When you have a chance, please complete your payment.</p>${loginLineHtml}<p>Thank you for being part of the FGGC alumni community.</p>${footerHtml}`
                 };
             }
 

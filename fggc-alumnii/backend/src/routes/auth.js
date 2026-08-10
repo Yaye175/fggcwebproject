@@ -128,7 +128,10 @@ router.post('/login', [
 });
 
 // POST /auth/forgot-password
-router.post('/forgot-password', async (req, res) => {
+// Normalize the email the SAME way signup/login do (lowercase, strip Gmail
+// dots, etc.), otherwise a user who types a different-but-equivalent form of
+// their address won't match the stored row and would silently get no email.
+router.post('/forgot-password', [body('email').normalizeEmail()], async (req, res) => {
     const { email } = req.body;
 
     // Always return the same response regardless of whether the email exists,
@@ -177,7 +180,10 @@ router.post('/forgot-password', async (req, res) => {
 });
 
 // POST /auth/reset-password
-router.post('/reset-password', async (req, res) => {
+// Normalize the email to match the stored (normalized) address. The reset link
+// already carries the normalized form, but normalizing here keeps it robust
+// against older links and manual entry.
+router.post('/reset-password', [body('email').normalizeEmail()], async (req, res) => {
     const { email, token, newPassword } = req.body;
 
     if (!email || !token || typeof newPassword !== 'string' || newPassword.length < 8) {

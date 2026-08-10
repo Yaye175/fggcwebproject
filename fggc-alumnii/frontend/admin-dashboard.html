@@ -238,7 +238,12 @@
             });
         });
 
-        const loggedInUser = JSON.parse(localStorage.getItem('user'));
+        let loggedInUser = null;
+        try {
+            loggedInUser = JSON.parse(localStorage.getItem('user'));
+        } catch (e) {
+            localStorage.removeItem('user');
+        }
         const token = localStorage.getItem('token');
 
         if (loggedInUser) {

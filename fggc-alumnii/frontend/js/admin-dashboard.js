@@ -1,6 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Restrict access to admin only
-    const user = JSON.parse(localStorage.getItem('user'));
+    // Restrict access to admin only. Parse defensively — corrupt localStorage
+    // must not throw and take the whole page (and its buttons) down with it.
+    let user = null;
+    try {
+        user = JSON.parse(localStorage.getItem('user'));
+    } catch (e) {
+        localStorage.removeItem('user');
+    }
     if (!user || (!user.is_admin && !user.is_pro_admin)) {
         alert('Access denied. Admin privileges required.');
         window.location.href = 'index.html';
