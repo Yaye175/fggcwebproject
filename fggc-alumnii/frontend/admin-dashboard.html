@@ -281,7 +281,11 @@
             }
         }
 
-        const handleUpload = async (url, formData) => {
+        // opts.silent suppresses the per-request alerts (used by the gallery
+        // uploader, which sends one request per file and reports a single
+        // summary at the end). Returns true on success, or an error string on
+        // failure so the caller can build its own summary.
+        const handleUpload = async (url, formData, opts = {}) => {
             try {
                 const res = await fetch(API_URL + url, {
                     method: 'POST',
@@ -297,11 +301,15 @@
                     data = { message: `Server error (${res.status}) — check that the server is running.` };
                     console.error('Non-JSON response:', text.substring(0, 300));
                 }
-                if (res.ok) { alert('Successfully uploaded!'); return true; }
-                else { alert('Error: ' + data.message); return false; }
+                if (res.ok) {
+                    if (!opts.silent) alert('Successfully uploaded!');
+                    return true;
+                }
+                if (!opts.silent) alert('Error: ' + data.message);
+                return opts.silent ? (data.message || 'Upload failed') : false;
             } catch (e) {
-                alert('Upload failed: ' + e);
-                return false;
+                if (!opts.silent) alert('Upload failed: ' + e);
+                return opts.silent ? (e && e.message ? e.message : String(e)) : false;
             }
         };
 
@@ -404,23 +412,50 @@
 
         document.getElementById('pro-gallery-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const form = e.target;
             const files = Array.from(galleryMediaInput.files);
             if (files.length === 0) { alert('Please select at least one file.'); return; }
             if (files.length > MAX_GALLERY_FILES) {
                 alert(`Please select no more than ${MAX_GALLERY_FILES} files at a time.`);
                 return;
             }
-            await withLoadingBtn(e.target, () => {
+
+            // Upload one file per request instead of all in a single large
+            // multipart body. A combined request of several phone photos/videos
+            // exceeds the host's request size/timeout and the connection is cut
+            // (Safari reports "Load failed"). Sending them one at a time reduces
+            // the batch to N repetitions of the known-working single-file upload.
+            const btn = form.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            const originalText = btn.textContent;
+            let uploaded = 0;
+            const failures = [];
+
+            for (let i = 0; i < files.length; i++) {
+                btn.textContent = `Uploading ${i + 1} of ${files.length}…`;
+                const cap = galleryFileList.querySelector(`.gallery-caption-input[data-index="${i}"]`);
                 const formData = new FormData();
-                // Append file then its caption per index so files and captions
-                // stay index-aligned on the server.
-                files.forEach((file, i) => {
-                    const cap = galleryFileList.querySelector(`.gallery-caption-input[data-index="${i}"]`);
-                    formData.append('media', file);
-                    formData.append('captions', cap ? cap.value : '');
-                });
-                return handleUpload('/gallery', formData);
-            });
+                formData.append('media', files[i]);
+                formData.append('captions', cap ? cap.value : '');
+                const result = await handleUpload('/gallery', formData, { silent: true });
+                if (result === true) uploaded++;
+                else failures.push(`${files[i].name}: ${result}`);
+            }
+
+            btn.disabled = false;
+            btn.textContent = originalText;
+
+            if (failures.length === 0) {
+                alert(`All ${uploaded} file(s) uploaded successfully!`);
+                form.reset(); // fires the reset handler -> clears previews
+            } else {
+                alert(
+                    `${uploaded} of ${files.length} uploaded.\n\nFailed:\n` +
+                    failures.join('\n') +
+                    `\n\nVery large videos may still be too big — try those one at a time.`
+                );
+                // Leave the selection in place so the admin can retry the failures.
+            }
         });
 
         // withLoadingBtn calls form.reset() on success — clear previews too.
