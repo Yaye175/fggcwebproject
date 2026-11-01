@@ -319,7 +319,9 @@ a:hover {
 }
 
 .nav-pill--dark .nav-logo {
-    color: var(--sky);
+    /* Pill is near-white in light theme, so sky text was too faint;
+       --navy flips to a light tone in dark theme, so this reads in both. */
+    color: var(--navy);
 }
 
 .nav-logo-img {
@@ -345,24 +347,20 @@ a:hover {
     transition: background 0.2s, color 0.2s;
 }
 
-.nav-pill--light .nav-link {
-    color: var(--text-mid);
-}
-
-.nav-pill--light .nav-link:hover,
-.nav-pill--light .nav-link.active {
+/* Both pill variants sit on an opaque background (near-white in light theme,
+   deep navy in dark theme), so links use --navy, which flips per theme. */
+.nav-pill .nav-link {
     color: var(--navy);
-    background: rgba(91, 170, 204, 0.12);
 }
 
-.nav-pill--dark .nav-link {
-    color: rgba(255, 255, 255, 0.6);
+.nav-pill .nav-link:hover,
+.nav-pill .nav-link.active {
+    color: var(--navy);
+    background: rgba(91, 170, 204, 0.18);
 }
 
-.nav-pill--dark .nav-link:hover,
-.nav-pill--dark .nav-link.active {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.12);
+.nav-pill .nav-link.active {
+    font-weight: 600;
 }
 
 /* Auth-links container inside nav */
@@ -469,8 +467,8 @@ main .btn-secondary:hover,
 }
 
 .nav-pill--dark .auth-buttons .btn-secondary {
-    border: 1.5px solid rgba(255, 255, 255, 0.4);
-    color: rgba(255, 255, 255, 0.8);
+    border: 1.5px solid var(--navy);
+    color: var(--navy);
     background: transparent;
     font-size: 0.8rem;
     padding: 0.38rem 0.9rem;
@@ -482,6 +480,17 @@ main .btn-secondary:hover,
     font-size: 0.8rem;
     padding: 0.38rem 0.9rem;
     border-radius: var(--r-pill);
+}
+
+/* In dark theme --navy becomes a light tone, which would put light text on
+   the sky Logout/Sign Up button. Pin the nav primary button to real navy text. */
+[data-theme="dark"] .nav-pill .auth-buttons .btn-primary {
+    background: var(--sky);
+    color: #0D2B4E;
+}
+
+.nav-pill .auth-buttons .btn-secondary:hover {
+    background: rgba(91, 170, 204, 0.18);
 }
 
 .btn-danger {
