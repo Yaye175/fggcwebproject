@@ -54,6 +54,29 @@ fggc-alumni/
 3. **Frontend Setup**
    - Serve the `/frontend/` folder organically using a tool like VS Code Live Server, or launch it directly in a browser.
 
+## 🎨 Colour-Contrast Check
+
+Every PR that touches the frontend runs an automated WCAG AA contrast check
+(`.github/workflows/contrast.yml`). It opens every page in light and dark theme,
+logged out and logged in, and fails if a change makes any text harder to read.
+
+Run it locally from the repo root:
+
+```bash
+npm install --ignore-scripts
+npx playwright install chromium   # first time only
+npm run check:contrast
+```
+
+Existing failures are listed in `scripts/contrast-baseline.json`; only **new**
+ones fail the check. After fixing some, shrink the list so they can't come back:
+
+```bash
+npm run check:contrast -- --update-baseline
+```
+
+Only add entries to the baseline on purpose — never to silence a real regression.
+
 ## 🔐 Built-in Security (Server Side)
 - **Helmet:** Sets varied HTTP headers.
 - **Bcrypt:** Hashes passwords to avoid plaintext leaks.

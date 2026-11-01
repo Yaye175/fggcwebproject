@@ -6,7 +6,8 @@
   "scripts": {
     "postinstall": "npm install --prefix fggc-alumnii/backend",
     "start": "npm start --prefix fggc-alumnii/backend",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "check:contrast": "node scripts/check-contrast.js"
   },
   "repository": {
     "type": "git",
@@ -28,5 +29,9 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
     "mysql2": "^3.20.0"
+  },
+  "devDependencies": {
+    "axe-core": "^4.10.3",
+    "playwright": "^1.63.0"
   }
 }
