@@ -138,7 +138,15 @@ async function measureFromPixels(tab, selector) {
             document.head.appendChild(style);
         }
         el.scrollIntoView({ block: 'center' });
-        const box = el.getBoundingClientRect();
+        // Sample only where the text is drawn, not the element's whole box:
+        // a pill button's box includes corners outside its border-radius that
+        // show the surface *behind* the button, and how big a share of pixels
+        // those corners are depends on font metrics (text width), which made
+        // results differ between machines.
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const textBox = range.getBoundingClientRect();
+        const box = textBox.width >= 1 && textBox.height >= 1 ? textBox : el.getBoundingClientRect();
         el.classList.add('__cc-hide');
         return {
             fg,
