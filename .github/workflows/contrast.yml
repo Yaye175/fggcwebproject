@@ -1,0 +1,36 @@
+name: Colour contrast
+
+# Fails a PR if it introduces new WCAG AA colour-contrast failures in the
+# frontend. Known existing failures live in scripts/contrast-baseline.json.
+on:
+  pull_request:
+    paths:
+      - 'fggc-alumnii/frontend/**'
+      - 'scripts/check-contrast.js'
+      - 'scripts/contrast-baseline.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/contrast.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'fggc-alumnii/frontend/**'
+      - 'scripts/check-contrast.js'
+      - 'scripts/contrast-baseline.json'
+  workflow_dispatch:
+
+jobs:
+  contrast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # --ignore-scripts skips the root postinstall, which installs the backend
+      # (bcrypt, mysql2, ...) — not needed to render static pages.
+      - run: npm ci --ignore-scripts
+      - run: npx playwright install --with-deps chromium
+      - run: npm run check:contrast
