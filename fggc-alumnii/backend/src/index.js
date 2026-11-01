@@ -132,7 +132,15 @@ app.get('/uploads/:filename', (req, res) => {
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
     res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
     res.sendFile(filePath, (err) => {
-        if (err) res.status(404).json({ message: 'File not found' });
+        if (!err) return;
+        // The visitor went away mid-download (closed the tab, scrolled past a
+        // video, navigated on), or the stream failed after bytes were already
+        // sent. Headers are gone, so there is nothing left to tell the client —
+        // writing a JSON error here throws ERR_HTTP_HEADERS_SENT outside any
+        // handler and crashes the whole server.
+        if (res.headersSent || err.code === 'ECONNABORTED') return;
+        const notFound = err.code === 'ENOENT' || err.status === 404;
+        res.status(notFound ? 404 : 500).json({ message: notFound ? 'File not found' : 'Could not send file' });
     });
 });
 
@@ -158,7 +166,22 @@ app.get('/health', async (req, res) => {
 
 // Global error handler — prevents stack traces from leaking to clients
 app.use((err, req, res, next) => {
-    console.error('Unhandled error:', err);
+    // Response already started: let Express close the connection rather than
+    // trying (and crashing) to write a second set of headers.
+    if (res.headersSent) return next(err);
+
+    // Client errors raised before a route runs — mostly body-parser rejecting an
+    // oversized (>100kb) or malformed JSON/form body. These are the caller's
+    // fault, not ours: answer with the real 4xx and log one line that says WHO
+    // and WHERE, instead of a 500 and an anonymous stack trace.
+    const status = err.status || err.statusCode;
+    if (status >= 400 && status < 500) {
+        console.warn(`Rejected ${req.method} ${req.originalUrl} from ${req.ip}: ${err.type || err.message} (${status})`);
+        const message = err.type === 'entity.too.large' ? 'Request body too large' : 'Bad request';
+        return res.status(status).json({ message });
+    }
+
+    console.error(`Unhandled error on ${req.method} ${req.originalUrl}:`, err);
     res.status(500).json({ message: 'Internal server error' });
 });
 
