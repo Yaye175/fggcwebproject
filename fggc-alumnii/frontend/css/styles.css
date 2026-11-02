@@ -321,7 +321,8 @@ a:hover {
         align-items: center;
         justify-content: center;
         gap: 3px;
-        color: rgba(255, 255, 255, 0.45);
+        /* The bar is navy in both themes; white at 45% was ~3.9:1. */
+        color: var(--on-dark-muted);
         text-decoration: none;
         font-size: 0.62rem;
         font-weight: 600;

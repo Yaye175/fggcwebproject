@@ -3,8 +3,9 @@
  * Automated colour-contrast check for the static frontend.
  *
  * Opens every page in fggc-alumnii/frontend in headless Chromium, in each
- * combination of theme (light / dark) and auth state (logged out / logged in as
- * a PRO admin), and runs axe-core's WCAG AA `color-contrast` rule.
+ * combination of screen size (desktop / phone), theme (light / dark) and auth
+ * state (logged out / logged in as a PRO admin), and runs axe-core's WCAG AA
+ * `color-contrast` rule.
  *
  * Existing failures are recorded in scripts/contrast-baseline.json. The check
  * fails only on failures that are NOT in the baseline, so new regressions are
@@ -24,6 +25,13 @@ const BASELINE = path.join(__dirname, 'contrast-baseline.json');
 const AXE_SRC = fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
 
 const THEMES = ['light', 'dark'];
+// Desktop plus a phone-sized screen: many members open the site from WhatsApp
+// links on their phones, and the mobile layout (bottom nav bar, stacked
+// cards, hidden nav pill) has its own colours.
+const VIEWPORTS = {
+    desktop: { viewport: { width: 1280, height: 900 } },
+    mobile: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true },
+};
 const USERS = {
     'logged-out': null,
     // Fake session: auth.js only reads localStorage to decide what the nav shows.
@@ -32,9 +40,9 @@ const USERS = {
 
 const pages = fs.readdirSync(FRONTEND).filter((f) => f.endsWith('.html')).sort();
 
-async function auditPage(browser, page, theme, userKey) {
+async function auditPage(browser, page, theme, userKey, viewportKey) {
     const context = await browser.newContext({
-        viewport: { width: 1280, height: 900 },
+        ...VIEWPORTS[viewportKey],
         reducedMotion: 'reduce',
     });
     const tab = await context.newPage();
@@ -74,7 +82,7 @@ async function auditPage(browser, page, theme, userKey) {
         for (const node of v.nodes) {
             const data = (node.any[0] && node.any[0].data) || {};
             out.push({
-                key: [theme, userKey, label, node.target.join(' ')].join(' | '),
+                key: [viewportKey, theme, userKey, label, node.target.join(' ')].join(' | '),
                 ratio: data.contrastRatio,
                 required: data.expectedContrastRatio,
                 fg: data.fgColor,
@@ -94,7 +102,7 @@ async function auditPage(browser, page, theme, userKey) {
             const m = await measureFromPixels(tab, node.target[0]);
             if (m && m.ratio < m.required) {
                 out.push({
-                    key: [theme, userKey, label, node.target[0]].join(' | '),
+                    key: [viewportKey, theme, userKey, label, node.target[0]].join(' | '),
                     ratio: m.ratio,
                     required: m.required,
                     fg: m.fg,
@@ -192,10 +200,12 @@ async function measureFromPixels(tab, selector) {
     const browser = await chromium.launch();
     const found = new Map();
     try {
-        for (const theme of THEMES) {
-            for (const userKey of Object.keys(USERS)) {
-                for (const page of pages) {
-                    for (const v of await auditPage(browser, page, theme, userKey)) found.set(v.key, v);
+        for (const viewportKey of Object.keys(VIEWPORTS)) {
+            for (const theme of THEMES) {
+                for (const userKey of Object.keys(USERS)) {
+                    for (const page of pages) {
+                        for (const v of await auditPage(browser, page, theme, userKey, viewportKey)) found.set(v.key, v);
+                    }
                 }
             }
         }
@@ -214,7 +224,7 @@ async function measureFromPixels(tab, selector) {
     const fresh = keys.filter((k) => !baseline.has(k));
     const fixed = [...baseline].filter((k) => !found.has(k));
 
-    console.log(`Checked ${pages.length} pages x ${THEMES.length} themes x ${Object.keys(USERS).length} auth states.`);
+    console.log(`Checked ${pages.length} pages x ${Object.keys(VIEWPORTS).length} screen sizes x ${THEMES.length} themes x ${Object.keys(USERS).length} auth states.`);
     console.log(`Known (baselined) violations still present: ${keys.length - fresh.length}`);
 
     if (fixed.length) {

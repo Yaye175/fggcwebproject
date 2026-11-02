@@ -57,8 +57,9 @@ fggc-alumni/
 ## 🎨 Colour-Contrast Check
 
 Every PR that touches the frontend runs an automated WCAG AA contrast check
-(`.github/workflows/contrast.yml`). It opens every page in light and dark theme,
-logged out and logged in, and fails if a change makes any text harder to read.
+(`.github/workflows/contrast.yml`). It opens every page on desktop and phone
+screen sizes, in light and dark theme, logged out and logged in, and fails if a
+change makes any text harder to read.
 
 Run it locally from the repo root:
 
