@@ -14,8 +14,24 @@
     --pearl: #FEFCF8;
     --green: #2E8B57;
     --danger: #D9534F;
+    /* Red for TEXT and outlines. --danger (#D9534F) is only ~3.6:1 on both the
+       cream page and navy cards, so text uses a deeper red on light surfaces
+       and a lighter red on dark ones. --danger-strong is a fill that keeps
+       white text readable (6.3:1). */
+    --danger-text: #B52B27;
+    --danger-strong: #B52B27;
+    /* Sky as TEXT on light surfaces: #5BAACC is only ~2.5:1 on cream, so small
+       labels/links use a deeper sky. Dark theme uses plain sky (passes). */
+    --sky-text: #23708F;
+    /* Fixed colours for surfaces that are dark in BOTH themes (login/signup
+       cards, finance page, hero card). Theme tokens like --pearl flip to dark
+       navy in dark mode, so they must not be used on these surfaces. */
+    --on-dark: #FEFCF8;
+    --on-dark-muted: rgba(255, 255, 255, 0.72);
+    --sky-on-dark: #A9D8EE;
     --text-dark: #3D3D3D;
-    --text-mid: #7A7A8C;
+    /* #7A7A8C was 3.8:1 on cream; #686879 is ~4.9:1. */
+    --text-mid: #686879;
     --text-body: #5A5A6A;
 
     /* Legacy aliases — kept because JS-injected HTML uses var(--primary-navy) etc. */
@@ -23,7 +39,7 @@
     --secondary-skyblue: #5BAACC;
     --accent-green: #2E8B57;
     --danger-red: #D9534F;
-    --text-muted: #7A7A8C;
+    --text-muted: #686879;
     --text-light: #FFFFFF;
     --bg-cream: #F7F3ED;
     --bg-pearl: #FEFCF8;
@@ -46,6 +62,9 @@
 
 /* ── Dark Mode ── */
 [data-theme="dark"] {
+    --danger-text: #FF8A80;
+    --sky-text: #5BAACC;
+    --text-muted: #9AADBE;
     --cream: #0D1B2E;
     --cream-deep: #091520;
     --pearl: #112338;
@@ -73,6 +92,18 @@
 [data-theme="dark"] .glass-card--dark {
     background: rgba(255, 255, 255, 0.03);
     border-color: rgba(91, 170, 204, 0.12);
+}
+
+/* Navy feature card. Uses literal navy because var(--navy) flips to cream in
+   dark mode, which turned these cards cream and hid their white text. The
+   doubled class out-ranks [data-theme="dark"] .glass-card. */
+.glass-card.glass-card--navy {
+    background: #0D2B4E;
+}
+
+[data-theme="dark"] .glass-card.glass-card--navy {
+    background: #0D2B4E;
+    border-color: rgba(91, 170, 204, 0.25);
 }
 
 [data-theme="dark"] .nav-pill--light {
@@ -128,6 +159,21 @@
 [data-theme="dark"] .btn-primary,
 [data-theme="dark"] .btn-primary:hover {
     color: #0D2B4E;
+}
+
+/* Game widgets kept their near-white surface in dark mode, so light text on
+   them was unreadable. Match the other dark-mode cards. */
+[data-theme="dark"] .game-widget {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(91, 170, 204, 0.15);
+}
+
+.game-widget__body {
+    background: rgba(255, 255, 255, 0.45);
+}
+
+[data-theme="dark"] .game-widget__body {
+    background: rgba(255, 255, 255, 0.04);
 }
 
 [data-theme="dark"] .news-tab:not(.active) {
@@ -413,14 +459,18 @@ a:hover {
 }
 
 .nav-badge--pro {
-    background: var(--navy);
+    /* Literal navy: var(--navy) flips to cream in dark mode, which put sky
+       text on a cream chip (2.05:1). */
+    background: #0D2B4E;
     color: var(--sky);
 }
 
 .nav-badge--finance {
     background: rgba(91, 170, 204, 0.2);
-    color: var(--sky);
-    border: 1px solid rgba(91, 170, 204, 0.3);
+    /* --navy follows the theme: navy on the white pill, cream on the dark one.
+       Sky text on the white pill was 1.86:1. */
+    color: var(--navy);
+    border: 1px solid rgba(91, 170, 204, 0.45);
 }
 
 /* ══════════════════════════════════
@@ -539,14 +589,21 @@ main .btn-secondary:hover,
     justify-content: center;
     gap: 0.5rem;
     background: transparent;
-    border: 1.5px solid var(--danger);
-    color: var(--danger);
+    border: 1.5px solid var(--danger-text);
+    color: var(--danger-text);
 }
 
 .btn-logout:hover {
-    background: var(--danger);
-    border-color: var(--danger);
+    background: var(--danger-strong);
+    border-color: var(--danger-strong);
     color: #fff;
+}
+
+/* On an always-dark surface (e.g. the navy Quick Actions card) use the light
+   red in both themes. */
+.glass-card--navy .btn-logout:not(:hover) {
+    border-color: #FF8A80;
+    color: #FF8A80;
 }
 
 .btn-logout svg {
@@ -555,7 +612,7 @@ main .btn-secondary:hover,
 }
 
 .btn-navy {
-    background: var(--navy);
+    background: #0D2B4E; /* literal: var(--navy) flips to cream in dark mode */
     color: var(--sky);
 }
 
@@ -658,7 +715,7 @@ main .btn-secondary:hover,
 .hero-pill-badge {
     display: inline-block;
     background: rgba(91, 170, 204, 0.18);
-    color: var(--sky);
+    color: var(--sky-on-dark);
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -676,7 +733,7 @@ main .btn-secondary:hover,
 }
 
 .hero-card p {
-    color: rgba(255, 255, 255, 0.58);
+    color: var(--on-dark-muted);
     font-size: 0.95rem;
     line-height: 1.7;
     max-width: 380px;
@@ -833,7 +890,7 @@ main {
 }
 
 .news-tab.active {
-    background: var(--navy);
+    background: #0D2B4E; /* literal: var(--navy) flips to cream in dark mode */
     color: var(--sky);
 }
 
@@ -1022,7 +1079,7 @@ main {
 }
 
 .form-container--dark h2 {
-    color: var(--pearl);
+    color: var(--on-dark);
 }
 
 .form-container--dark label {
