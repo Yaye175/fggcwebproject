@@ -20,8 +20,18 @@
        white text readable (6.3:1). */
     --danger-text: #B52B27;
     --danger-strong: #B52B27;
+    /* Sky as TEXT on light surfaces: #5BAACC is only ~2.5:1 on cream, so small
+       labels/links use a deeper sky. Dark theme uses plain sky (passes). */
+    --sky-text: #23708F;
+    /* Fixed colours for surfaces that are dark in BOTH themes (login/signup
+       cards, finance page, hero card). Theme tokens like --pearl flip to dark
+       navy in dark mode, so they must not be used on these surfaces. */
+    --on-dark: #FEFCF8;
+    --on-dark-muted: rgba(255, 255, 255, 0.72);
+    --sky-on-dark: #A9D8EE;
     --text-dark: #3D3D3D;
-    --text-mid: #7A7A8C;
+    /* #7A7A8C was 3.8:1 on cream; #686879 is ~4.9:1. */
+    --text-mid: #686879;
     --text-body: #5A5A6A;
 
     /* Legacy aliases — kept because JS-injected HTML uses var(--primary-navy) etc. */
@@ -29,7 +39,7 @@
     --secondary-skyblue: #5BAACC;
     --accent-green: #2E8B57;
     --danger-red: #D9534F;
-    --text-muted: #7A7A8C;
+    --text-muted: #686879;
     --text-light: #FFFFFF;
     --bg-cream: #F7F3ED;
     --bg-pearl: #FEFCF8;
@@ -53,6 +63,8 @@
 /* ── Dark Mode ── */
 [data-theme="dark"] {
     --danger-text: #FF8A80;
+    --sky-text: #5BAACC;
+    --text-muted: #9AADBE;
     --cream: #0D1B2E;
     --cream-deep: #091520;
     --pearl: #112338;
@@ -147,6 +159,21 @@
 [data-theme="dark"] .btn-primary,
 [data-theme="dark"] .btn-primary:hover {
     color: #0D2B4E;
+}
+
+/* Game widgets kept their near-white surface in dark mode, so light text on
+   them was unreadable. Match the other dark-mode cards. */
+[data-theme="dark"] .game-widget {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(91, 170, 204, 0.15);
+}
+
+.game-widget__body {
+    background: rgba(255, 255, 255, 0.45);
+}
+
+[data-theme="dark"] .game-widget__body {
+    background: rgba(255, 255, 255, 0.04);
 }
 
 [data-theme="dark"] .news-tab:not(.active) {
@@ -585,7 +612,7 @@ main .btn-secondary:hover,
 }
 
 .btn-navy {
-    background: var(--navy);
+    background: #0D2B4E; /* literal: var(--navy) flips to cream in dark mode */
     color: var(--sky);
 }
 
@@ -688,7 +715,7 @@ main .btn-secondary:hover,
 .hero-pill-badge {
     display: inline-block;
     background: rgba(91, 170, 204, 0.18);
-    color: var(--sky);
+    color: var(--sky-on-dark);
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -706,7 +733,7 @@ main .btn-secondary:hover,
 }
 
 .hero-card p {
-    color: rgba(255, 255, 255, 0.58);
+    color: var(--on-dark-muted);
     font-size: 0.95rem;
     line-height: 1.7;
     max-width: 380px;
@@ -863,7 +890,7 @@ main {
 }
 
 .news-tab.active {
-    background: var(--navy);
+    background: #0D2B4E; /* literal: var(--navy) flips to cream in dark mode */
     color: var(--sky);
 }
 
@@ -1052,7 +1079,7 @@ main {
 }
 
 .form-container--dark h2 {
-    color: var(--pearl);
+    color: var(--on-dark);
 }
 
 .form-container--dark label {

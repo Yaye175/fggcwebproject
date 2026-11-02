@@ -26,18 +26,20 @@
             color: rgba(255, 255, 255, 0.85);
         }
 
+        /* This page is dark in both themes: use the fixed --on-dark colours,
+           not theme tokens like --pearl (which flips to navy in dark mode). */
         main h1,
         main h2,
         main h3 {
-            color: var(--pearl);
+            color: var(--on-dark);
         }
 
         main p {
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--on-dark-muted);
         }
 
         .page-heading p {
-            color: rgba(255, 255, 255, 0.5);
+            color: var(--on-dark-muted);
         }
 
         /* Dark glass table for finance admin */
@@ -48,7 +50,7 @@
 
         th {
             background: rgba(255, 255, 255, 0.10);
-            color: var(--sky);
+            color: var(--sky-on-dark);
         }
 
         td {
@@ -89,7 +91,7 @@
 
         .fin-stat .f-lbl {
             font-size: 0.78rem;
-            color: rgba(255, 255, 255, 0.5);
+            color: var(--on-dark-muted);
             font-weight: 600;
         }
     </style>
@@ -139,7 +141,7 @@
                 <option value="Overdue">Overdue</option>
             </select>
             <button id="send-all-reminders-btn" class="btn"
-                style="background:var(--danger);color:white;margin-left:auto;">
+                style="background:var(--danger-strong);color:white;margin-left:auto;">
                 Send Reminder to All Unpaid
             </button>
         </div>
