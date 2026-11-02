@@ -14,6 +14,12 @@
     --pearl: #FEFCF8;
     --green: #2E8B57;
     --danger: #D9534F;
+    /* Red for TEXT and outlines. --danger (#D9534F) is only ~3.6:1 on both the
+       cream page and navy cards, so text uses a deeper red on light surfaces
+       and a lighter red on dark ones. --danger-strong is a fill that keeps
+       white text readable (6.3:1). */
+    --danger-text: #B52B27;
+    --danger-strong: #B52B27;
     --text-dark: #3D3D3D;
     --text-mid: #7A7A8C;
     --text-body: #5A5A6A;
@@ -46,6 +52,7 @@
 
 /* ── Dark Mode ── */
 [data-theme="dark"] {
+    --danger-text: #FF8A80;
     --cream: #0D1B2E;
     --cream-deep: #091520;
     --pearl: #112338;
@@ -73,6 +80,18 @@
 [data-theme="dark"] .glass-card--dark {
     background: rgba(255, 255, 255, 0.03);
     border-color: rgba(91, 170, 204, 0.12);
+}
+
+/* Navy feature card. Uses literal navy because var(--navy) flips to cream in
+   dark mode, which turned these cards cream and hid their white text. The
+   doubled class out-ranks [data-theme="dark"] .glass-card. */
+.glass-card.glass-card--navy {
+    background: #0D2B4E;
+}
+
+[data-theme="dark"] .glass-card.glass-card--navy {
+    background: #0D2B4E;
+    border-color: rgba(91, 170, 204, 0.25);
 }
 
 [data-theme="dark"] .nav-pill--light {
@@ -413,14 +432,18 @@ a:hover {
 }
 
 .nav-badge--pro {
-    background: var(--navy);
+    /* Literal navy: var(--navy) flips to cream in dark mode, which put sky
+       text on a cream chip (2.05:1). */
+    background: #0D2B4E;
     color: var(--sky);
 }
 
 .nav-badge--finance {
     background: rgba(91, 170, 204, 0.2);
-    color: var(--sky);
-    border: 1px solid rgba(91, 170, 204, 0.3);
+    /* --navy follows the theme: navy on the white pill, cream on the dark one.
+       Sky text on the white pill was 1.86:1. */
+    color: var(--navy);
+    border: 1px solid rgba(91, 170, 204, 0.45);
 }
 
 /* ══════════════════════════════════
@@ -539,14 +562,21 @@ main .btn-secondary:hover,
     justify-content: center;
     gap: 0.5rem;
     background: transparent;
-    border: 1.5px solid var(--danger);
-    color: var(--danger);
+    border: 1.5px solid var(--danger-text);
+    color: var(--danger-text);
 }
 
 .btn-logout:hover {
-    background: var(--danger);
-    border-color: var(--danger);
+    background: var(--danger-strong);
+    border-color: var(--danger-strong);
     color: #fff;
+}
+
+/* On an always-dark surface (e.g. the navy Quick Actions card) use the light
+   red in both themes. */
+.glass-card--navy .btn-logout:not(:hover) {
+    border-color: #FF8A80;
+    color: #FF8A80;
 }
 
 .btn-logout svg {
