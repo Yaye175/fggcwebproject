@@ -2,6 +2,7 @@ const express = require('express');
 const pool = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
+const dues = require('../dues');
 
 const router = express.Router();
 
@@ -9,23 +10,26 @@ const router = express.Router();
 router.use(authMiddleware);
 router.use(adminMiddleware);
 
-// GET /admin/finance/members
+// GET /admin/finance/members?year=2025  (year defaults to the current year)
 router.get('/members', async (req, res) => {
-    try {
-        const currentYear = new Date().getFullYear();
+    const year = dues.parseYear(req.query.year);
+    if (year === null) {
+        return res.status(400).json({ message: `Year must be between ${dues.FIRST_DUES_YEAR} and ${dues.currentYear()}.` });
+    }
 
-        // This query fetches all users and their payment status for the current year
+    try {
         const query = `
             SELECT u.id, u.first_name, u.last_name, u.email, u.graduation_year,
                    COALESCE(p.status, 'unpaid') AS payment_status,
-                   COALESCE(p.months_paid, '') AS months_paid
+                   COALESCE(p.months_paid, '') AS months_paid,
+                   (p.id IS NOT NULL) AS has_record
             FROM users u
             LEFT JOIN payments p ON u.id = p.user_id AND p.year = ?
             WHERE u.is_admin = FALSE
             ORDER BY u.last_name ASC
         `;
 
-        const [members] = await pool.execute(query, [currentYear]);
+        const [members] = await pool.execute(query, [year]);
         res.json(members);
     } catch (error) {
         console.error(error);
@@ -34,51 +38,57 @@ router.get('/members', async (req, res) => {
 });
 
 // PUT /admin/finance/payments/:userId/toggle
+// Body: { months_paid: "Jan, Feb", year?: 2025 }  (year defaults to the current year)
 router.put('/payments/:userId/toggle', async (req, res) => {
     const { userId } = req.params;
-    const { months_paid } = req.body;
-    const currentYear = new Date().getFullYear();
+    const year = dues.parseYear(req.body.year);
+    if (year === null) {
+        return res.status(400).json({ message: `Year must be between ${dues.FIRST_DUES_YEAR} and ${dues.currentYear()}.` });
+    }
+
+    const { months, invalid } = dues.parseMonths(req.body.months_paid);
+    if (invalid.length) {
+        return res.status(400).json({ message: `Unknown month(s): ${invalid.join(', ')}` });
+    }
+
+    const monthsPaid = months.join(', ');
+    const displayStatus = dues.statusFor(year, months); // Paid | Pending | Overdue
+    // payments.status is ENUM('paid','unpaid'). Writing 'pending'/'overdue'
+    // here made MySQL (strict mode) reject every partial-month save, so those
+    // payments were never stored and never reached the member's portal.
+    // Pending/Overdue are always derived from months_paid when read.
+    const dbStatus = displayStatus === 'Paid' ? 'paid' : 'unpaid';
 
     try {
-        // Check if there's a payment record for this year
         const [payments] = await pool.execute(
-            'SELECT id, status FROM payments WHERE user_id = ? AND year = ?',
-            [userId, currentYear]
+            'SELECT id FROM payments WHERE user_id = ? AND year = ?',
+            [userId, year]
         );
 
-        // Compute status using the same 3-month rule as the frontend
-        const MONTH_ABBREVS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        const currentMonthIndex = new Date().getMonth();
-        const expectedMonths = MONTH_ABBREVS.slice(0, currentMonthIndex + 1);
-        const paidList = (months_paid || '').split(',').map(s => s.trim()).filter(Boolean);
-        const unpaidCount = expectedMonths.filter(m => !paidList.includes(m)).length;
-
-        let displayStatus = unpaidCount === 0 ? 'Paid' : unpaidCount >= 3 ? 'Overdue' : 'Pending';
-        let newStatus = displayStatus.toLowerCase(); // payments table uses lowercase
-        let newMonthsPaid = months_paid || '';
-
         if (payments.length > 0) {
-            // Update existing record
             await pool.execute(
                 'UPDATE payments SET status = ?, months_paid = ? WHERE id = ?',
-                [newStatus, newMonthsPaid, payments[0].id]
+                [dbStatus, monthsPaid, payments[0].id]
             );
         } else {
-            // Create new record as paid with a default amount
-            const defaultAmount = 50.00; // e.g. 50 GHS/NGN/USD
+            const defaultAmount = 50.00;
             await pool.execute(
                 'INSERT INTO payments (user_id, year, amount, status, months_paid) VALUES (?, ?, ?, ?, ?)',
-                [userId, currentYear, defaultAmount, newStatus, newMonthsPaid]
+                [userId, year, defaultAmount, dbStatus, monthsPaid]
             );
         }
 
-        // Sync the users table so the admin dashboard reflects the change
-        await pool.execute(
-            'UPDATE users SET payment_status = ?, last_payment_date = CURRENT_TIMESTAMP WHERE id = ?',
-            [displayStatus, userId]
-        );
+        // users.payment_status is the member's *current* standing (used by the
+        // admin table and reminders). Back-filling an earlier year must not
+        // overwrite it.
+        if (year === dues.currentYear()) {
+            await pool.execute(
+                'UPDATE users SET payment_status = ?, last_payment_date = CURRENT_TIMESTAMP WHERE id = ?',
+                [displayStatus, userId]
+            );
+        }
 
-        res.json({ message: 'Payment status updated', status: newStatus, months_paid: newMonthsPaid });
+        res.json({ message: 'Payment status updated', year, status: dbStatus, monthly_status: displayStatus, months_paid: monthsPaid });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error updating payment status' });

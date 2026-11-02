@@ -97,6 +97,39 @@
     background: rgba(255, 255, 255, 0.04);
 }
 
+/* Native controls (select popups, date-picker icon, file-input button,
+   scrollbars) follow the theme instead of staying bright white. */
+[data-theme="dark"] {
+    color-scheme: dark;
+}
+
+/* Form fields. The base rules give fields a near-white background in both
+   themes, but their text colour (--text-dark) flips to cream in dark mode —
+   light text on a white box (~1.5:1). Give them a dark surface instead.
+   .gallery-caption-input rows are built in JS outside .form-group. */
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select,
+[data-theme="dark"] .form-group textarea,
+[data-theme="dark"] .status-select,
+[data-theme="dark"] .gallery-caption-input {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(91, 170, 204, 0.28);
+    color: var(--text-dark);
+}
+
+[data-theme="dark"] .form-group input::placeholder,
+[data-theme="dark"] .form-group textarea::placeholder,
+[data-theme="dark"] .gallery-caption-input::placeholder {
+    color: var(--text-mid);
+}
+
+/* Primary buttons are sky blue in both themes, but their text uses --navy,
+   which flips to cream in dark mode. Pin the text to real navy. */
+[data-theme="dark"] .btn-primary,
+[data-theme="dark"] .btn-primary:hover {
+    color: #0D2B4E;
+}
+
 [data-theme="dark"] .news-tab:not(.active) {
     background: rgba(255, 255, 255, 0.08);
 }
@@ -1175,6 +1208,14 @@ tbody tr:hover {
 .status-overdue {
     background: rgba(217, 83, 79, 0.12);
     color: var(--danger);
+}
+
+/* Past year the financial secretary hasn't entered yet */
+.status-not-recorded {
+    background: transparent;
+    border: 1px dashed currentColor;
+    color: var(--text-mid);
+    font-weight: 600;
 }
 
 /* Filter controls */

@@ -3,6 +3,7 @@ const pool = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 const { sendReminders } = require('../cron/reminders');
+const dues = require('../dues');
 
 const router = express.Router();
 
@@ -10,20 +11,26 @@ const router = express.Router();
 router.use(authMiddleware);
 router.use(adminMiddleware);
 
-// GET /admin/users - list all users
+// GET /admin/users?year=2025 - list all users with that year's payments
+// (year defaults to the current year)
 router.get('/users', async (req, res) => {
+    const year = dues.parseYear(req.query.year);
+    if (year === null) {
+        return res.status(400).json({ message: `Year must be between ${dues.FIRST_DUES_YEAR} and ${dues.currentYear()}.` });
+    }
+
     try {
-        const currentYear = new Date().getFullYear();
         const query = `
             SELECT u.id, u.first_name, u.last_name, u.email, u.graduation_year, u.department, u.phone, 
                    u.payment_status, u.last_payment_date, u.is_admin, u.is_pro_admin, u.created_at,
-                   COALESCE(p.months_paid, '') AS months_paid
+                   COALESCE(p.months_paid, '') AS months_paid,
+                   (p.id IS NOT NULL) AS has_record
             FROM users u
             LEFT JOIN payments p ON u.id = p.user_id AND p.year = ?
             ORDER BY u.last_name ASC
         `;
 
-        const [users] = await pool.execute(query, [currentYear]);
+        const [users] = await pool.execute(query, [year]);
 
         // Generate proper Member IDs: FGGC/{graduation_year}/{sequential_number}
         const yearCounters = {};

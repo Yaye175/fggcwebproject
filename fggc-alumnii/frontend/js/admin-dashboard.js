@@ -15,7 +15,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tableBody = document.getElementById('users-table-body');
     const filterSelect = document.getElementById('status-filter');
+    const yearSelect = document.getElementById('year-filter');
     let allUsers = [];
+
+    // Dues are tracked from 2024; the current year is added automatically each
+    // January. Must match FIRST_DUES_YEAR in backend/src/dues.js.
+    const FIRST_DUES_YEAR = 2024;
+    const CURRENT_YEAR = new Date().getFullYear();
+    let selectedYear = CURRENT_YEAR;
+
+    if (yearSelect) {
+        for (let y = CURRENT_YEAR; y >= FIRST_DUES_YEAR; y--) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y === CURRENT_YEAR ? `${y} (current)` : String(y);
+            yearSelect.appendChild(opt);
+        }
+        yearSelect.addEventListener('change', () => {
+            selectedYear = Number(yearSelect.value);
+            // Reminder emails cover the current year only — hide the bulk
+            // button while a past year is on screen so it can't be mistaken
+            // for "remind everyone who owes for <past year>".
+            const bulkBtn = document.getElementById('send-all-reminders-btn');
+            if (bulkBtn) bulkBtn.style.display = selectedYear === CURRENT_YEAR ? '' : 'none';
+            fetchUsers();
+        });
+    }
 
     // Fetch all users on load if standard admin
     if (user.is_admin) {
@@ -50,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchUsers() {
         try {
             tableBody.innerHTML = '<tr><td colspan="8">Loading users...</td></tr>';
-            const users = await api.get('/admin/users');
+            const users = await api.get(`/admin/users?year=${selectedYear}`);
             allUsers = users;
             renderTable(allUsers);
         } catch (error) {
@@ -63,17 +88,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const MONTH_ABBREVS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
     /**
-     * Computes status purely from months_paid vs the current calendar date.
+     * Computes status for the selected year from months_paid
+     * (same rules as backend/src/dues.js).
      *
-     * Rules:
-     *   - Expected months = Jan → current month (inclusive)
-     *   - 0 unpaid           → Paid
-     *   - 1–2 unpaid         → Pending
-     *   - 3+ unpaid          → Overdue
+     *   - Expected months = all 12 for a past year; Jan → current month for this year
+     *   - Past year with nothing entered yet → "Not recorded"
+     *   - 0 unpaid → Paid, 1–2 unpaid → Pending, 3+ unpaid → Overdue
      */
     function getEffectiveStatus(user) {
-        const currentMonthIndex = new Date().getMonth(); // 0 = Jan
-        const expectedMonths = MONTH_ABBREVS.slice(0, currentMonthIndex + 1);
+        if (selectedYear < CURRENT_YEAR && !Number(user.has_record)) return 'Not recorded';
+        const expectedMonths = selectedYear < CURRENT_YEAR
+            ? MONTH_ABBREVS
+            : MONTH_ABBREVS.slice(0, new Date().getMonth() + 1);
         const paidMonths = (user.months_paid || '').split(',').map(s => s.trim()).filter(Boolean);
         const unpaidCount = expectedMonths.filter(m => !paidMonths.includes(m)).length;
 
@@ -103,19 +129,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const effectiveStatus = getEffectiveStatus(user);
-            const statusClass = `status-${effectiveStatus.toLowerCase()}`;
+            const statusClass = `status-${effectiveStatus.toLowerCase().replace(/\s+/g, '-')}`;
             const monthsPaid = user.months_paid || 'None';
-            const isUnpaid = effectiveStatus !== 'Paid';
+            // Reminder emails are about the current year's dues only.
+            const isUnpaid = effectiveStatus !== 'Paid' && selectedYear === CURRENT_YEAR;
 
             tr.innerHTML = `
                 <td>${escapeHtml(user.first_name)} ${escapeHtml(user.last_name)}</td>
                 <td>${escapeHtml(user.email)}</td>
                 <td>${escapeHtml(user.member_id || 'FGGC/' + (user.graduation_year || '0000') + '/000')}</td>
-                <td><span class="status-badge ${statusClass}">${effectiveStatus}</span></td>
+                <td><span class="status-badge ${statusClass}">${escapeHtml(effectiveStatus)}</span></td>
                 <td>${escapeHtml(monthsPaid)}</td>
                 <td>${displayDate}</td>
                 <td>
-                    <button class="btn btn-secondary action-btn" data-action="update-payment" data-userid="${user.id}" data-months="${user.months_paid || ''}" style="background:#0a2540; color:white; border:none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+                    <button class="btn btn-secondary action-btn" data-action="update-payment" data-userid="${user.id}" data-months="${escapeHtml(user.months_paid || '')}" style="background:#0a2540; color:white; border:none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
                         Update Payments
                     </button>
                 </td>
@@ -176,6 +203,9 @@ document.addEventListener('DOMContentLoaded', () => {
             cb.checked = currentMonths.includes(cb.value);
         });
 
+        const title = document.getElementById('payment-modal-title');
+        if (title) title.textContent = `Update Monthly Payments — ${selectedYear}`;
+
         modal.style.display = 'flex';
     }
 
@@ -211,10 +241,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedMonths = Array.from(checkboxes).map(cb => cb.value).join(', ');
 
         try {
-            await api.put(`/admin/finance/payments/${currentEditingUserId}/toggle`, { months_paid: selectedMonths });
+            await api.put(`/admin/finance/payments/${currentEditingUserId}/toggle`, { year: selectedYear, months_paid: selectedMonths });
             closePaymentModal();
             fetchUsers(); // Reload table
-            alert('Payments updated successfully');
+            alert(`${selectedYear} payments updated successfully`);
         } catch (error) {
             alert('Failed to update status: ' + error.message);
         }
