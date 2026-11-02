@@ -129,6 +129,8 @@
         </div>
 
         <div class="filter-container">
+            <label for="year-filter">Year:</label>
+            <select id="year-filter" class="status-select" aria-label="Dues year"></select>
             <label for="status-filter">Filter by Status:</label>
             <select id="status-filter" class="status-select">
                 <option value="All">All Statuses</option>
@@ -175,7 +177,7 @@
     <div id="payment-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 style="margin:0;">Update Monthly Payments</h3>
+                <h3 style="margin:0;" id="payment-modal-title">Update Monthly Payments</h3>
                 <button class="modal-close" id="modal-close-btn">&times;</button>
             </div>
             <p style="margin-bottom:1rem;font-size:0.88rem;color:var(--text-mid);">Select quick options or pick
@@ -222,7 +224,9 @@
             const paid = tableBody.querySelectorAll('.status-paid').length;
             const pending = tableBody.querySelectorAll('.status-pending').length;
             const overdue = tableBody.querySelectorAll('.status-overdue').length;
-            if (paid + pending + overdue > 0) {
+            // Refresh whenever member rows are shown (also when a past year has
+            // nothing recorded yet), so switching years never leaves stale counts.
+            if (tableBody.querySelector('.status-badge')) {
                 document.getElementById('stat-paid').textContent = paid;
                 document.getElementById('stat-pending').textContent = pending;
                 document.getElementById('stat-overdue').textContent = overdue;

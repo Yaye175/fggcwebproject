@@ -1210,6 +1210,14 @@ tbody tr:hover {
     color: var(--danger);
 }
 
+/* Past year the financial secretary hasn't entered yet */
+.status-not-recorded {
+    background: transparent;
+    border: 1px dashed currentColor;
+    color: var(--text-mid);
+    font-weight: 600;
+}
+
 /* Filter controls */
 .filter-container {
     display: flex;
